@@ -1,0 +1,56 @@
+{extend name="layout" /}
+
+{block name="content"}
+<div class="content-box">
+    <h2 style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #67C23A;">
+        标签：{$tag.name}
+    </h2>
+
+    {notempty name="tag.description"}
+    <p style="color: #666; margin-bottom: 30px; padding: 15px; background: #f9f9f9; border-radius: 4px;">
+        {$tag.description}
+    </p>
+    {/notempty}
+
+    <div style="color: #999; margin-bottom: 20px;">
+        共有 {$tag.article_count|default='0'} 篇文章
+    </div>
+
+    <div class="article-list">
+        {volist name="articles" id="article"}
+        <article style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+            <h3 style="margin-bottom: 10px;">
+                <a href="/article/{$article.id}.html" style="color: #333; text-decoration: none;">
+                    {$article.title}
+                </a>
+            </h3>
+            <div style="color: #999; font-size: 14px; margin-bottom: 10px;">
+                <span>作者：{$article.user.real_name|default=$article.author|default='管理员'}</span>
+                <span style="margin-left: 20px;">发布时间：{$article.publish_time|default=$article.create_time}</span>
+                <span style="margin-left: 20px;">浏览量：{$article.view_count}</span>
+            </div>
+            {notempty name="article.category"}
+            <div style="color: #999; font-size: 14px; margin-bottom: 10px;">
+                <span>分类：{$article.category.name}</span>
+            </div>
+            {/notempty}
+            <p style="color: #666; line-height: 1.8;">
+                {$article.summary|default='暂无摘要'}
+            </p>
+        </article>
+        {/volist}
+    </div>
+
+    {empty name="articles"}
+    <div style="text-align: center; padding: 50px 0; color: #999;">
+        该标签下暂无文章
+    </div>
+    {/empty}
+</div>
+
+<style>
+    .article-list a:hover {
+        color: #67C23A;
+    }
+</style>
+{/block}

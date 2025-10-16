@@ -1,18 +1,39 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+# ThinkPHP 运行时文件
+/runtime/*
+!/runtime/.gitignore
 
-# Other files and folders
-.settings/
+# Composer 依赖
+/vendor/
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+# 环境配置文件（包含敏感信息）
+.env
+.env.local
+.env.*.local
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+# 上传文件
+/public/uploads/*
+!/public/uploads/.gitignore
+
+# 静态生成文件
+/public/static/*
+!/public/static/.gitignore
+
+# IDE 文件
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 日志文件
+*.log
+
+# 备份文件
+*.bak
+*.swp
+*.tmp
+*~

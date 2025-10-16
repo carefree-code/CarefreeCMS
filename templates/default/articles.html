@@ -1,0 +1,76 @@
+{extend name="layout" /}
+
+{block name="content"}
+<div class="content-box">
+    <h2 style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 2px solid #409EFF;">全部文章</h2>
+
+    <div class="article-list">
+        {volist name="articles" id="article"}
+        <article style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+            <h3 style="margin-bottom: 10px;">
+                <a href="/article/{$article.id}.html" style="color: #333; text-decoration: none;">
+                    {$article.title}
+                </a>
+            </h3>
+            <div style="color: #999; font-size: 14px; margin-bottom: 10px;">
+                <span>分类：
+                    <a href="/category/{$article.category_id}.html" style="color: #409EFF; text-decoration: none;">
+                        {$article.category.name|default='未分类'}
+                    </a>
+                </span>
+                <span style="margin-left: 20px;">作者：{$article.user.real_name|default=$article.author|default='管理员'}</span>
+                <span style="margin-left: 20px;">发布时间：{$article.publish_time|default=$article.create_time}</span>
+                <span style="margin-left: 20px;">浏览量：{$article.view_count}</span>
+            </div>
+            <p style="color: #666; line-height: 1.8;">
+                {$article.summary|default='暂无摘要'}
+            </p>
+            {notempty name="article.tags"}
+            <div style="margin-top: 10px;">
+                {volist name="article.tags" id="tag"}
+                <a href="/tag/{$tag.id}.html" style="display: inline-block; background: #f0f0f0; color: #666; padding: 3px 10px; border-radius: 3px; text-decoration: none; margin-right: 5px; font-size: 12px;">
+                    {$tag.name}
+                </a>
+                {/volist}
+            </div>
+            {/notempty}
+        </article>
+        {/volist}
+    </div>
+
+    {empty name="articles"}
+    <div style="text-align: center; padding: 50px 0; color: #999;">
+        暂无文章
+    </div>
+    {/empty}
+
+    <!-- 分页导航 -->
+    {notempty name="pagination"}
+    <div style="margin-top: 30px; text-align: center;">
+        <div style="display: inline-block;">
+            {if $pagination.current_page > 1}
+            <a href="/articles-{$pagination.current_page - 1}.html" style="display: inline-block; padding: 8px 15px; margin: 0 5px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333;">上一页</a>
+            {/if}
+
+            {for start="1" end="$pagination.total_pages + 1"}
+            {if $i == $pagination.current_page}
+            <span style="display: inline-block; padding: 8px 15px; margin: 0 5px; background: #409EFF; color: #fff; border-radius: 4px;">{$i}</span>
+            {else /}
+            <a href="/articles{if $i > 1}-{$i}{/if}.html" style="display: inline-block; padding: 8px 15px; margin: 0 5px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333;">{$i}</a>
+            {/if}
+            {/for}
+
+            {if $pagination.current_page < $pagination.total_pages}
+            <a href="/articles-{$pagination.current_page + 1}.html" style="display: inline-block; padding: 8px 15px; margin: 0 5px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333;">下一页</a>
+            {/if}
+        </div>
+    </div>
+    {/notempty}
+</div>
+
+<style>
+    .article-list a:hover {
+        color: #409EFF;
+    }
+</style>
+{/block}

@@ -1,0 +1,72 @@
+{extend name="layout" /}
+
+{block name="content"}
+<div class="content-box">
+    <article>
+        <header style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #eee;">
+            <h1 style="font-size: 32px; margin-bottom: 15px;">{$article.title}</h1>
+            <div style="color: #999; font-size: 14px;">
+                <span>分类：
+                    <a href="/category/{$article.category_id}.html" style="color: #409EFF; text-decoration: none;">
+                        {$article.category.name|default='未分类'}
+                    </a>
+                </span>
+                <span style="margin-left: 20px;">作者：{$article.user.real_name|default=$article.author|default='管理员'}</span>
+                <span style="margin-left: 20px;">发布时间：{$article.publish_time|default=$article.create_time}</span>
+                <span style="margin-left: 20px;">浏览量：{$article.view_count}</span>
+            </div>
+            {notempty name="article.tags"}
+            <div style="margin-top: 10px;">
+                标签：
+                {volist name="article.tags" id="tag"}
+                <a href="/tag/{$tag.id}.html" style="display: inline-block; background: #f0f0f0; color: #666; padding: 3px 10px; border-radius: 3px; text-decoration: none; margin-right: 5px; font-size: 12px;">
+                    {$tag.name}
+                </a>
+                {/volist}
+            </div>
+            {/notempty}
+        </header>
+
+        <div class="article-content" style="line-height: 1.8; color: #333; font-size: 16px;">
+            {$article.content|raw}
+        </div>
+
+        <footer style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #eee;">
+            <div style="display: flex; justify-content: space-between;">
+                {notempty name="prev"}
+                <div>
+                    上一篇：<a href="/article/{$prev.id}.html" style="color: #409EFF; text-decoration: none;">{$prev.title}</a>
+                </div>
+                {/notempty}
+                {notempty name="next"}
+                <div>
+                    下一篇：<a href="/article/{$next.id}.html" style="color: #409EFF; text-decoration: none;">{$next.title}</a>
+                </div>
+                {/notempty}
+            </div>
+        </footer>
+    </article>
+</div>
+
+<style>
+    .article-content p {
+        margin-bottom: 15px;
+    }
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 20px auto;
+    }
+    .article-content h2 {
+        margin-top: 30px;
+        margin-bottom: 15px;
+        font-size: 24px;
+    }
+    .article-content h3 {
+        margin-top: 25px;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+</style>
+{/block}

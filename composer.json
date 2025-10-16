@@ -1,0 +1,49 @@
+{
+    "name": "sinma/huanxi-cms",
+    "version": "1.0.0",
+    "description": "欢喜内容管理系统",
+    "type": "project",
+    "keywords": [
+        "cms",
+        "content management",
+        "huanxi"
+    ],
+    "homepage": "https://www.sinma.net/",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "sinma",
+            "email": "sinma@qq.com",
+            "homepage": "https://www.sinma.net/"
+        }
+    ],
+    "require": {
+        "php": ">=8.0.0",
+        "topthink/framework": "^8.0",
+        "topthink/think-orm": "^3.0|^4.0",
+        "topthink/think-filesystem": "^2.0|^3.0",
+        "firebase/php-jwt": "^6.11",
+        "topthink/think-view": "^2.0"
+    },
+    "require-dev": {
+        "topthink/think-dumper": "^1.0",
+        "topthink/think-trace": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "app\\": "app"
+        },
+        "psr-0": {
+            "": "extend/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@php think service:discover",
+            "@php think vendor:publish"
+        ]
+    }
+}
