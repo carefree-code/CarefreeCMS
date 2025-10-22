@@ -1,6 +1,6 @@
 # 逍遥内容管理系统 (CarefreeCMS)
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
 ![PHP](https://img.shields.io/badge/php-8.1+-green.svg)
 ![Vue](https://img.shields.io/badge/vue-3.5-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
@@ -54,6 +54,20 @@ carefreecms/
 │   ├── composer.json
 │   └── .env                      # 环境配置
 │
+├── backend/                      # Vue 3 后台管理界面
+│   ├── src/
+│   │   ├── api/                 # API接口封装
+│   │   ├── assets/              # 静态资源
+│   │   ├── components/          # 公共组件
+│   │   ├── views/               # 页面视图
+│   │   ├── router/              # 路由配置
+│   │   ├── store/               # Pinia状态管理
+│   │   ├── utils/               # 工具函数
+│   │   ├── App.vue
+│   │   └── main.js
+│   ├── public/
+│   ├── package.json
+│   └── vite.config.js
 │
 ├── database_design.sql           # 数据库设计文件
 └── README.md                     # 项目说明文档
@@ -166,7 +180,15 @@ carefreecms/
 
 ## 📖 文档
 
-完整的技术文档请查看：待完善
+完整的技术文档请查看：[文档中心](README.md)
+
+**快速链接：**
+- [完整部署指南](docs/deployment/DEPLOY.md) - 生产环境部署详细步骤
+- [后端环境配置](docs/deployment/backend-env.md) - .env 配置说明
+- [前端环境配置](docs/deployment/frontend-env.md) - 环境变量配置
+- [API 接口文档](docs/api/API.md) - 完整的 API 接口说明
+- [前端开发指南](docs/development/frontend-guide.md) - 前端开发规范
+- [权限管理指南](docs/development/permissions-guide.md) - 权限系统使用
 
 ## 安装部署
 
@@ -174,6 +196,7 @@ carefreecms/
 
 ```bash
 git clone https://gitee.com/sinma/carefreecms.git
+
 ```
 
 ### 2. 后端配置
@@ -189,7 +212,7 @@ composer install
 # 编辑 config/database.php 文件，设置数据库连接信息
 
 # 导入数据库
-# 将 database_design.sql 导入到 MySQL 数据库
+# 将 database.sql 导入到 MySQL 数据库
 
 # 启动开发服务器
 php think run -p8000
@@ -214,7 +237,7 @@ npm run dev
 
 ### 4. 生产部署
 
-**详细的生产环境部署指南，请查看：待完善**
+**详细的生产环境部署指南，请查看：[完整部署文档](docs/deployment/DEPLOY.md)**
 
 快速步骤：
 
@@ -229,6 +252,7 @@ npm run build
 - 复制 `.env.production` 为 `.env` 并修改配置
 - 确保 `runtime` 和 `public/uploads` 目录可写
 
+更多细节请参考：[完整部署文档](docs/deployment/DEPLOY.md)
 
 ## 默认账号
 
@@ -241,6 +265,7 @@ npm run build
 
 后端 API 采用 RESTful 风格设计，所有接口都需要 JWT Token 认证（登录接口除外）。
 
+**完整的 API 文档请查看：[API 接口文档](docs/api/API.md)**
 
 常用接口：
 - `POST /api/auth/login` - 用户登录
@@ -264,6 +289,14 @@ npm run build
 确保 `api/public/static` 目录存在且有写入权限。
 
 ## 更新日志
+
+### v1.1.0 (2025-10-21)
+- ✨ 新增缓存驱动切换功能，支持File和Redis两种驱动
+- ✨ 优化Sitemap生成界面，合并基础格式和高级类型为单页
+- ✨ TinyMCE编辑器优化：移除帮助功能，工具栏改为2行布局
+- ✨ 增强缓存管理：支持Redis连接测试和实时驱动切换
+- 🐛 修复API路由404错误
+- 🐛 优化PHP Redis扩展检测和错误提示
 
 ### v1.0.0 (2025-10-15)
 - 🎉 首个正式版本发布
@@ -295,4 +328,4 @@ npm run build
 
 ---
 
-Made with ❤️ by Carefree Team © 2025
+Made with ❤️ by CarefreeCMS Team © 2025

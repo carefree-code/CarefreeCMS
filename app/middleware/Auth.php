@@ -41,8 +41,10 @@ class Auth
             return Response::unauthorized('令牌无效或已过期');
         }
 
-        // 将用户信息存储到请求对象中
+        // 将用户信息存储到请求对象中（提供多个属性名以保持向后兼容）
         $request->user = $userData;
+        $request->adminInfo = $userData;  // 兼容旧代码中使用 adminInfo 的情况
+        $request->userInfo = $userData;   // 提供另一个语义化的属性名
 
         // 执行请求
         $response = $next($request);

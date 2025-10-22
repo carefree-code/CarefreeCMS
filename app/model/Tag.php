@@ -3,15 +3,20 @@
 namespace app\model;
 
 use think\Model;
+use think\model\concern\SoftDelete;
 
 /**
  * 标签模型
  */
 class Tag extends Model
 {
+    use SoftDelete;
+
     protected $name = 'tags';
 
     protected $autoWriteTimestamp = true;
+    protected $deleteTime = 'deleted_at';
+    protected $defaultSoftDelete = null;
 
     protected $type = [
         'article_count' => 'integer',

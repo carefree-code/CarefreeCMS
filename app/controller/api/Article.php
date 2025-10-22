@@ -8,6 +8,8 @@ use app\common\Logger;
 use app\model\Article as ArticleModel;
 use app\model\ArticleTag;
 use app\model\ArticleCategory;
+use app\model\ArticleVersion;
+use app\model\TopicArticle;
 use app\model\OperationLog;
 use think\Request;
 use think\facade\Db;
@@ -35,7 +37,7 @@ class Article extends BaseController
         $endTime = $request->get('end_time', '');  // 结束时间
 
         // 构建查询
-        $query = ArticleModel::with(['category', 'user', 'tags', 'categories']);
+        $query = ArticleModel::with(['category', 'user', 'tags', 'categories', 'topics']);
 
         // 搜索条件
         if (!empty($title)) {
@@ -103,7 +105,7 @@ class Article extends BaseController
      */
     public function read($id)
     {
-        $article = ArticleModel::with(['category', 'user', 'tags', 'categories'])->find($id);
+        $article = ArticleModel::with(['category', 'user', 'tags', 'categories', 'topics'])->find($id);
 
         if (!$article) {
             return Response::notFound('文章不存在');
@@ -151,6 +153,10 @@ class Article extends BaseController
         $tags = $data['tags'] ?? [];
         unset($data['tags']);
 
+        // 获取专题数据
+        $topics = $data['topics'] ?? [];
+        unset($data['topics']);
+
         // 获取副分类数据
         $subCategories = $data['sub_categories'] ?? [];
         unset($data['sub_categories']);
@@ -180,6 +186,17 @@ class Article extends BaseController
                     ArticleTag::create([
                         'article_id' => $article->id,
                         'tag_id' => $tagId
+                    ]);
+                }
+            }
+
+            // 关联专题
+            if (!empty($topics) && is_array($topics)) {
+                foreach ($topics as $topicId) {
+                    TopicArticle::create([
+                        'topic_id' => $topicId,
+                        'article_id' => $article->id,
+                        'sort' => 0
                     ]);
                 }
             }
@@ -217,6 +234,9 @@ class Article extends BaseController
                 ]);
             }
 
+            // 创建初始版本（标签关系会自动延迟加载）
+            ArticleVersion::createFromArticle($article, $request->user['id'], '初始版本');
+
             Db::commit();
 
             // 记录日志
@@ -246,9 +266,17 @@ class Article extends BaseController
         $tags = $data['tags'] ?? null;
         unset($data['tags']);
 
+        // 获取专题数据
+        $topics = $data['topics'] ?? null;
+        unset($data['topics']);
+
         // 获取副分类数据
         $subCategories = $data['sub_categories'] ?? null;
         unset($data['sub_categories']);
+
+        // 获取版本修改说明
+        $changeLog = $data['change_log'] ?? null;
+        unset($data['change_log']);
 
         // 主分类ID
         $mainCategoryId = $data['category_id'] ?? $article->category_id;
@@ -276,6 +304,21 @@ class Article extends BaseController
                     ArticleTag::create([
                         'article_id' => $id,
                         'tag_id' => $tagId
+                    ]);
+                }
+            }
+
+            // 更新专题关联
+            if ($topics !== null && is_array($topics)) {
+                // 删除旧的专题关联
+                TopicArticle::where('article_id', $id)->delete();
+
+                // 添加新的专题关联
+                foreach ($topics as $topicId) {
+                    TopicArticle::create([
+                        'topic_id' => $topicId,
+                        'article_id' => $id,
+                        'sort' => 0
                     ]);
                 }
             }
@@ -318,6 +361,9 @@ class Article extends BaseController
                     ]);
                 }
             }
+
+            // 创建新版本（更新后，标签关系会自动延迟加载）
+            ArticleVersion::createFromArticle($article, $request->user['id'], $changeLog);
 
             Db::commit();
 

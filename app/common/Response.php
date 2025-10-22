@@ -21,24 +21,27 @@ class Response
             'message' => $message,
             'data' => $data,
             'timestamp' => time()
-        ]);
+        ], 200);  // HTTP 200 OK
     }
 
     /**
      * 失败响应
      * @param string $message 错误信息
-     * @param int $code 业务状态码
+     * @param int $code 业务状态码（同时作为HTTP状态码）
      * @param mixed $data 返回的数据
      * @return \think\response\Json
      */
     public static function error(string $message = 'error', int $code = 400, $data = [])
     {
+        // 确定HTTP状态码：业务code在合法的HTTP状态码范围内则使用，否则默认400
+        $httpCode = ($code >= 400 && $code < 600) ? $code : 400;
+
         return json([
             'code' => $code,
             'message' => $message,
             'data' => $data,
             'timestamp' => time()
-        ]);
+        ], $httpCode);
     }
 
     /**
@@ -63,7 +66,7 @@ class Response
                 'total_pages' => ceil($total / $pageSize)
             ],
             'timestamp' => time()
-        ]);
+        ], 200);  // HTTP 200 OK
     }
 
     /**

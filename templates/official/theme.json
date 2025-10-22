@@ -1,0 +1,16 @@
+{
+    "key": "official",
+    "name": "官网模板",
+    "description": "现代化企业官网模板，适合CMS产品展示、企业宣传",
+    "author": "Claude",
+    "version": "1.0.0",
+    "preview": "/static/templates/official/preview.jpg",
+    "features": [
+        "响应式设计",
+        "现代化UI",
+        "轮播展示",
+        "产品功能介绍",
+        "客户案例展示",
+        "联系表单"
+    ]
+}

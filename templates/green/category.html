@@ -21,12 +21,12 @@
                 </a>
             </h3>
             <div style="color: #999; font-size: 14px; margin-bottom: 10px;">
-                <span>作者：{$article.user.real_name|default=$article.author|default='管理员'}</span>
-                <span style="margin-left: 20px;">发布时间：{$article.publish_time|default=$article.create_time}</span>
+                <span>作者：{$article.user.real_name ?: ($article.author ?: '管理员')}</span>
+                <span style="margin-left: 20px;">发布时间：{$article.publish_time ?: $article.create_time}</span>
                 <span style="margin-left: 20px;">浏览量：{$article.view_count}</span>
             </div>
             <p style="color: #666; line-height: 1.8;">
-                {$article.summary|default='暂无摘要'}
+                {$article.summary ?: '暂无摘要'}
             </p>
         </article>
         {/volist}

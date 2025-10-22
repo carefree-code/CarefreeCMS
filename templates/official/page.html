@@ -1,0 +1,190 @@
+{extend name="layout" /}
+
+{block name="style"}
+<style>
+    .page-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 6rem 0 4rem;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .page-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .page-header p {
+        font-size: 1.25rem;
+        opacity: 0.9;
+    }
+
+    .breadcrumb-custom {
+        background: transparent;
+        padding: 0;
+        margin-top: 1.5rem;
+        justify-content: center;
+    }
+
+    .breadcrumb-custom .breadcrumb-item {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .breadcrumb-custom .breadcrumb-item.active {
+        color: #fff;
+    }
+
+    .breadcrumb-custom .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .breadcrumb-custom a {
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .breadcrumb-custom a:hover {
+        text-decoration: underline;
+    }
+
+    .page-content {
+        background: #fff;
+        border-radius: 20px;
+        padding: 4rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        margin-bottom: 5rem;
+    }
+
+    .page-content h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-top: 3rem;
+        margin-bottom: 1.5rem;
+        color: #1e293b;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .page-content h2:first-child {
+        margin-top: 0;
+    }
+
+    .page-content h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #334155;
+    }
+
+    .page-content p {
+        font-size: 1.1rem;
+        line-height: 2;
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-content img {
+        max-width: 100%;
+        border-radius: 15px;
+        margin: 2rem 0;
+    }
+
+    .page-content ul,
+    .page-content ol {
+        font-size: 1.1rem;
+        line-height: 2;
+        color: #64748b;
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+    }
+
+    .page-content li {
+        margin-bottom: 0.75rem;
+    }
+
+    .page-content blockquote {
+        border-left: 4px solid #667eea;
+        padding-left: 1.5rem;
+        margin: 2rem 0;
+        color: #64748b;
+        font-style: italic;
+    }
+
+    .page-content table {
+        width: 100%;
+        margin: 2rem 0;
+        border-collapse: collapse;
+    }
+
+    .page-content table th {
+        background: #f8fafc;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #1e293b;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .page-content table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        color: #64748b;
+    }
+
+    .page-content table tr:hover {
+        background: #f8fafc;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2rem;
+        }
+
+        .page-content {
+            padding: 2rem 1.5rem;
+        }
+
+        .page-content h2 {
+            font-size: 1.5rem;
+        }
+
+        .page-content h3 {
+            font-size: 1.25rem;
+        }
+
+        .page-content p {
+            font-size: 1rem;
+        }
+    }
+</style>
+{/block}
+
+{block name="content"}
+<!-- 页面头部 -->
+<div class="page-header">
+    <div class="container">
+        <h1 data-aos="fade-up">{$page.title ?: '页面标题'}</h1>
+        <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="100">
+            <ol class="breadcrumb breadcrumb-custom">
+                <li class="breadcrumb-item"><a href="/">首页</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{$page.title ?: '页面'}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<!-- 页面内容 -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="page-content" data-aos="fade-up">
+                {$page.content|raw}
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

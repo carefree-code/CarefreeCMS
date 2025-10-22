@@ -1,0 +1,740 @@
+{extend name="layout" /}
+
+{block name="style"}
+<style>
+    /* 英雄区 */
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 8rem 0 6rem;
+        color: #fff;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,197.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+        opacity: 0.5;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+    }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.95;
+    }
+
+    .hero-buttons .btn {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        margin-right: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .btn-light-custom {
+        background: #fff;
+        color: #667eea;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-light-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-outline-light-custom {
+        border: 2px solid #fff;
+        color: #fff;
+        background: transparent;
+    }
+
+    .btn-outline-light-custom:hover {
+        background: #fff;
+        color: #667eea;
+    }
+
+    .hero-image {
+        position: relative;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .hero-image img {
+        max-width: 100%;
+        filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+    }
+
+    /* 特性区块 */
+    .features-section {
+        padding: 6rem 0;
+        background: #f8fafc;
+    }
+
+    .section-title {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .section-title h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 1rem;
+    }
+
+    .section-title p {
+        font-size: 1.1rem;
+        color: #64748b;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+        border: 1px solid #e2e8f0;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        font-size: 2rem;
+        color: #fff;
+    }
+
+    .feature-card h4 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #1e293b;
+    }
+
+    .feature-card p {
+        color: #64748b;
+        line-height: 1.8;
+        margin: 0;
+    }
+
+    /* 统计数据区 */
+    .stats-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 5rem 0;
+        color: #fff;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    /* 案例展示区 */
+    .showcase-section {
+        padding: 6rem 0;
+        background: #fff;
+    }
+
+    .showcase-card {
+        background: #fff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .showcase-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .showcase-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .showcase-content {
+        padding: 2rem;
+    }
+
+    .showcase-content h4 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #1e293b;
+    }
+
+    .showcase-content p {
+        color: #64748b;
+        margin-bottom: 1.5rem;
+    }
+
+    .showcase-tag {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        background: #f1f5f9;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        color: #667eea;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    /* CTA区块 */
+    .cta-section {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        padding: 6rem 0;
+        color: #fff;
+        text-align: center;
+    }
+
+    .cta-section h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .cta-section p {
+        font-size: 1.25rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.9;
+    }
+
+    /* 友情链接样式 */
+    .link-item {
+        display: block;
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: #333;
+        border: 1px solid #e0e0e0;
+    }
+
+    .link-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+    }
+
+    .link-logo {
+        max-width: 100%;
+        height: 50px;
+        object-fit: contain;
+    }
+
+    .link-text {
+        font-size: 14px;
+        font-weight: 500;
+        padding: 15px 5px;
+    }
+
+    /* 广告位样式 */
+    .ad-container {
+        margin: 20px 0;
+        text-align: center;
+    }
+
+    .ad-item {
+        display: block;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+        text-decoration: none;
+    }
+
+    .ad-item:hover {
+        transform: scale(1.02);
+    }
+
+    .ad-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    /* 顶部广告 */
+    .top-ads-section {
+        background: #fff;
+        padding: 30px 0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .top-ad-item {
+        display: block;
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .top-ad-item:hover {
+        opacity: 0.9;
+    }
+
+    .top-ad-item img {
+        width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    /* 侧边广告 */
+    .side-ads-container {
+        position: fixed;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1000;
+        max-width: 200px;
+        display: none;
+    }
+
+    @media (min-width: 1400px) {
+        .side-ads-container {
+            display: block;
+        }
+    }
+
+    .side-ad-item {
+        display: block;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        background: #fff;
+    }
+
+    .side-ad-item:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .side-ad-item img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    /* 轮播图样式调整 */
+    .slider-section {
+        margin-bottom: 40px;
+    }
+
+    .carousel-caption h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .carousel-caption p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
+
+        .section-title h2 {
+            font-size: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+        }
+
+        .carousel-caption h2 {
+            font-size: 1.5rem;
+        }
+
+        .carousel-caption p {
+            font-size: 0.9rem;
+        }
+
+        .link-logo {
+            height: 40px;
+        }
+    }
+</style>
+{/block}
+
+{block name="content"}
+<!-- 轮播图 -->
+{if condition="isset($sliders) && count($sliders) > 0"}
+<section class="slider-section">
+    <div id="mainSlider" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {volist name="sliders" id="slider" key="k"}
+            <button type="button" data-bs-target="#mainSlider" data-bs-slide-to="{$k-1}" class="{$k == 1 ? 'active' : ''}" aria-current="{$k == 1 ? 'true' : 'false'}" aria-label="Slide {$k}"></button>
+            {/volist}
+        </div>
+        <div class="carousel-inner">
+            {volist name="sliders" id="slider" key="k"}
+            <div class="carousel-item {$k == 1 ? 'active' : ''}">
+                <img src="{$slider.image ?? '/assets/images/placeholder/slider.jpg'}" class="d-block w-100" alt="{$slider.title ?? ''}" style="max-height: 600px; object-fit: cover;">
+                {if condition="(isset($slider['title']) && $slider['title']) || (isset($slider['description']) && $slider['description'])"}
+                <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px;">
+                    {if condition="isset($slider['title']) && $slider['title']"}
+                    <h2>{$slider.title}</h2>
+                    {/if}
+                    {if condition="isset($slider['description']) && $slider['description']"}
+                    <p>{$slider.description}</p>
+                    {/if}
+                    {if condition="isset($slider['link']) && $slider['link']"}
+                    <a href="{$slider.link}" class="btn btn-light-custom">了解更多</a>
+                    {/if}
+                </div>
+                {/if}
+            </div>
+            {/volist}
+        </div>
+        {if condition="count($sliders) > 1"}
+        <button class="carousel-control-prev" type="button" data-bs-target="#mainSlider" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#mainSlider" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+        {/if}
+    </div>
+</section>
+{else /}
+<!-- 英雄区（无轮播图时显示） -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 hero-content" data-aos="fade-right">
+                <h1 class="hero-title">现代化内容管理系统</h1>
+                <p class="hero-subtitle">基于ThinkPHP8构建的企业级CMS解决方案，助力您的数字化转型</p>
+                <div class="hero-buttons">
+                    <a href="/admin" class="btn btn-light-custom">立即体验</a>
+                    <a href="/features.html" class="btn btn-outline-light-custom">了解更多</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center hero-image" data-aos="fade-left">
+                <img src="/assets/images/placeholder/dashboard.svg" alt="CMS Dashboard">
+            </div>
+        </div>
+    </div>
+</section>
+{/if}
+
+<!-- 顶部广告 -->
+{if condition="isset($top_ads) && count($top_ads) > 0"}
+<section class="top-ads-section">
+    <div class="container">
+        <div class="row g-3">
+            {volist name="top_ads" id="ad"}
+            <div class="col-lg-{12 / min(count($top_ads), 3)} col-md-6" data-aos="fade-up" data-aos-delay="{$i * 100}">
+                {if condition="isset($ad['link']) && $ad['link']"}
+                <a href="{$ad.link}" target="_blank" class="top-ad-item" title="{$ad.title ?? ''}">
+                    <img src="{$ad.image ?? '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?? ''}">
+                </a>
+                {else /}
+                <div class="top-ad-item">
+                    <img src="{$ad.image ?? '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?? ''}">
+                </div>
+                {/if}
+            </div>
+            {/volist}
+        </div>
+    </div>
+</section>
+{/if}
+
+<!-- 核心特性 -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>核心特性</h2>
+            <p>强大的功能，简洁的界面，助力您的内容管理</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <h4>高性能</h4>
+                    <p>基于ThinkPHP6框架，优化的数据库查询和缓存机制，确保系统高效运行</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>安全可靠</h4>
+                    <p>多层安全防护，RBAC权限管理，敏感词过滤，保障系统和内容安全</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-phone"></i>
+                    </div>
+                    <h4>响应式设计</h4>
+                    <p>完美支持PC、平板、手机等各种设备，随时随地管理您的内容</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-palette"></i>
+                    </div>
+                    <h4>多模板支持</h4>
+                    <p>灵活的模板系统，支持多套主题切换，轻松定制您的网站外观</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-diagram-3"></i>
+                    </div>
+                    <h4>版本管理</h4>
+                    <p>完整的内容版本控制，支持版本对比和回滚，永不担心误操作</p>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h4>SEO优化</h4>
+                    <p>内置SEO优化功能，自定义TDK，友好的URL结构，提升搜索引擎排名</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 统计数据 -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="10000">0</span>
+                    <span class="stat-label">用户信赖</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="500">0</span>
+                    <span class="stat-label">企业客户</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="99">0</span>
+                    <span class="stat-label">客户满意度 %</span>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                <div class="stat-item">
+                    <span class="stat-number" data-count="24">0</span>
+                    <span class="stat-label">小时技术支持</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 应用案例 -->
+<section class="showcase-section">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>应用案例</h2>
+            <p>众多企业和组织选择我们的解决方案</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                <div class="showcase-card">
+                    <img src="/assets/images/placeholder/showcase-corporate.svg" alt="企业官网" class="showcase-image">
+                    <div class="showcase-content">
+                        <h4>企业官网</h4>
+                        <p>为大型企业提供品牌展示和产品宣传平台，提升企业形象</p>
+                        <span class="showcase-tag">企业门户</span>
+                        <span class="showcase-tag">品牌展示</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="showcase-card">
+                    <img src="/assets/images/placeholder/showcase-news.svg" alt="新闻门户" class="showcase-image">
+                    <div class="showcase-content">
+                        <h4>新闻门户</h4>
+                        <p>专业的新闻发布和内容管理系统，支持多渠道分发</p>
+                        <span class="showcase-tag">新闻媒体</span>
+                        <span class="showcase-tag">内容分发</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                <div class="showcase-card">
+                    <img src="/assets/images/placeholder/showcase-ecommerce.svg" alt="电商平台" class="showcase-image">
+                    <div class="showcase-content">
+                        <h4>电商平台</h4>
+                        <p>灵活的产品管理和内容营销解决方案，助力电商业务增长</p>
+                        <span class="showcase-tag">电子商务</span>
+                        <span class="showcase-tag">营销推广</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 友情链接 -->
+{if condition="isset($links) && count($links) > 0"}
+<section class="links-section" style="background: #f8f9fa; padding: 60px 0;">
+    <div class="container">
+        <div class="section-title" data-aos="fade-up">
+            <h2>友情链接</h2>
+            <p>携手共进，共创未来</p>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {volist name="links" id="link"}
+            <div class="col-lg-2 col-md-3 col-sm-4 col-6 text-center" data-aos="fade-up" data-aos-delay="{$i * 50}">
+                <a href="{$link.url ?? '#'}" target="_blank" class="link-item" title="{$link.title ?? ''}" rel="nofollow">
+                    {if condition="isset($link['logo']) && $link['logo']"}
+                    <img src="{$link.logo}" alt="{$link.title}" class="link-logo">
+                    {else /}
+                    <div class="link-text">{$link.title ?? ''}</div>
+                    {/if}
+                </a>
+            </div>
+            {/volist}
+        </div>
+    </div>
+</section>
+{/if}
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container" data-aos="fade-up">
+        <h2>准备开始了吗？</h2>
+        <p>立即体验强大的内容管理系统，开启数字化转型之旅</p>
+        <a href="/admin" class="btn btn-light-custom btn-lg">免费试用</a>
+        <a href="/contact.html" class="btn btn-outline-light-custom btn-lg ms-3">联系我们</a>
+    </div>
+</section>
+
+<!-- 侧边广告（固定在右侧，仅在大屏幕显示） -->
+{if condition="isset($side_ads) && count($side_ads) > 0"}
+<div class="side-ads-container">
+    {volist name="side_ads" id="ad"}
+    {if condition="isset($ad['link']) && $ad['link']"}
+    <a href="{$ad.link}" target="_blank" class="side-ad-item" title="{$ad.title ?? ''}">
+        <img src="{$ad.image ?? '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?? ''}">
+    </a>
+    {else /}
+    <div class="side-ad-item">
+        <img src="{$ad.image ?? '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?? ''}">
+    </div>
+    {/if}
+    {/volist}
+</div>
+{/if}
+{/block}
+
+{block name="script"}
+<script>
+    // 数字动画
+    function animateValue(element, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            element.textContent = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // 监听统计数据区域进入视口
+    const observerOptions = {
+        threshold: 0.5
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                document.querySelectorAll('.stat-number').forEach(stat => {
+                    const count = parseInt(stat.getAttribute('data-count'));
+                    animateValue(stat, 0, count, 2000);
+                });
+                observer.disconnect();
+            }
+        });
+    }, observerOptions);
+
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+        observer.observe(statsSection);
+    }
+</script>
+{/block}

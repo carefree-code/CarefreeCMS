@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {if condition="$is_home"}
     <!-- 首页使用系统配置的TDK -->
-    <title>{$config.web_title|default=$config.web_name|default='CMS系统'}</title>
-    <meta name="keywords" content="{$config.web_keywords|default=''}">
-    <meta name="description" content="{$config.web_description|default=''}">
+    <title>{$config.web_title ?: ($config.web_name ?: 'CMS系统')}</title>
+    <meta name="keywords" content="{$config.web_keywords ?: ''}">
+    <meta name="description" content="{$config.web_description ?: ''}">
     {else /}
     <!-- 内页使用页面自定义TDK -->
-    <title>{$title|default='网站标题'} - {$config.web_name|default='CMS系统'}</title>
-    <meta name="keywords" content="{$keywords|default=''}">
-    <meta name="description" content="{$description|default=''}">
+    <title>{$title ?: '网站标题'} - {$config.web_name ?: 'CMS系统'}</title>
+    <meta name="keywords" content="{$keywords ?: ''}">
+    <meta name="description" content="{$description ?: ''}">
     {/if}
     <style>
         * {
@@ -77,7 +77,7 @@
 <body>
     <header>
         <div class="container">
-            <h1>{$config.web_name|default='CMS系统'}</h1>
+            <h1>{$config.web_name ?: 'CMS系统'}</h1>
             <nav>
                 <a href="/index.html">首页</a>
                 <a href="/articles.html">文章</a>
@@ -97,7 +97,7 @@
             {notempty name="config.web_copyright"}
             <p>{$config.web_copyright|raw}</p>
             {else /}
-            <p>&copy; 2024 {$config.web_name|default='CMS系统'}. All rights reserved.</p>
+            <p>&copy; 2024 {$config.web_name ?: 'CMS系统'}. All rights reserved.</p>
             {/notempty}
 
             {notempty name="config.web_recordnum"}

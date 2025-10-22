@@ -17,8 +17,8 @@ class ArticleFlag extends BaseController
      */
     public function index(Request $request)
     {
-        $page = $request->param('page', 1);
-        $pageSize = $request->param('pageSize', 10);
+        $page = (int) $request->param('page', 1);
+        $pageSize = (int) $request->param('pageSize', 10);
         $name = $request->param('name', '');
 
         $query = ArticleFlagModel::order('sort_order', 'asc');

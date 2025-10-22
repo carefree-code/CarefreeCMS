@@ -32,7 +32,7 @@ class Build extends BaseController
     {
         parent::initialize();
 
-        $this->outputPath = root_path() . 'html' . DIRECTORY_SEPARATOR;
+        $this->outputPath = app()->getRootPath() . 'html' . DIRECTORY_SEPARATOR;
 
         // 确保输出目录存在
         if (!is_dir($this->outputPath)) {
@@ -102,12 +102,51 @@ class Build extends BaseController
                 ->select()
                 ->toArray();
 
+            // 获取轮播图（首页轮播图组，group_id = 1）
+            $sliders = \app\model\Slider::where('group_id', 1)
+                ->where('status', 1)
+                ->order('sort', 'asc')
+                ->select()
+                ->toArray();
+
+            // 获取友情链接（首页友情链接组，group_id = 1）
+            $links = \app\model\Link::where('group_id', 1)
+                ->where('status', 1)
+                ->order('sort', 'asc')
+                ->select()
+                ->toArray();
+
+            // 获取广告（首页顶部广告位，position_id = 1；首页侧边广告位，position_id = 2）
+            $topAds = \app\model\Ad::where('position_id', 1)
+                ->where('status', 1)
+                ->whereTime('start_time', '<=', date('Y-m-d H:i:s'))
+                ->where(function($query) {
+                    $query->whereNull('end_time')->whereOr('end_time', '>=', date('Y-m-d H:i:s'));
+                })
+                ->order('sort', 'asc')
+                ->select()
+                ->toArray();
+
+            $sideAds = \app\model\Ad::where('position_id', 2)
+                ->where('status', 1)
+                ->whereTime('start_time', '<=', date('Y-m-d H:i:s'))
+                ->where(function($query) {
+                    $query->whereNull('end_time')->whereOr('end_time', '>=', date('Y-m-d H:i:s'));
+                })
+                ->order('sort', 'asc')
+                ->select()
+                ->toArray();
+
             // 获取首页模板配置，默认使用 index
             $template = $this->config['index_template'] ?? 'index';
 
             // 渲染模板（使用模板套装路径）
             $content = View::fetch($this->getTemplatePath($template), [
                 'articles' => $articles,
+                'sliders' => $sliders,
+                'links' => $links,
+                'top_ads' => $topAds,
+                'side_ads' => $sideAds,
                 'config' => $this->config,
                 'is_home' => true  // 标记为首页
             ]);
@@ -150,6 +189,16 @@ class Build extends BaseController
             $total = $totalQuery->count();
             $totalPages = ceil($total / $pageSize);
 
+            // 获取侧边栏数据（所有页面共用）
+            $categories = Category::select()->toArray();
+            $tags = Tag::where('status', 1)->limit(20)->select()->toArray();
+            $hotArticles = Article::where('status', 1)
+                ->order('view_count', 'desc')
+                ->limit(5)
+                ->field('id,title,view_count')
+                ->select()
+                ->toArray();
+
             // 生成每一页
             for ($page = 1; $page <= $totalPages; $page++) {
                 $articles = Article::with(['category', 'user', 'tags'])
@@ -172,7 +221,10 @@ class Build extends BaseController
                         'total_pages' => $totalPages,
                         'total' => $total,
                         'page_size' => $pageSize
-                    ]
+                    ],
+                    'categories' => $categories,
+                    'tags' => $tags,
+                    'hot_articles' => $hotArticles
                 ]);
 
                 // 保存文件
@@ -217,6 +269,9 @@ class Build extends BaseController
         }
 
         try {
+            // 记录开始生成
+            trace('开始生成文章页，ID: ' . $id . ', 模板套装: ' . $this->currentTheme, 'info');
+
             // 获取文章详情
             $article = Article::with(['category', 'user', 'tags'])
                 ->where('id', $id)
@@ -226,6 +281,8 @@ class Build extends BaseController
             if (!$article) {
                 return Response::error('文章不存在或未发布');
             }
+
+            trace('文章数据加载完成: ' . json_encode($article->toArray(), JSON_UNESCAPED_UNICODE), 'info');
 
             // 获取上一篇和下一篇
             $prev = Article::where('id', '<', $id)
@@ -240,8 +297,8 @@ class Build extends BaseController
                 ->field('id,title')
                 ->find();
 
-            // 渲染模板（使用模板套装路径）
-            $content = View::fetch($this->getTemplatePath('article'), [
+            $templatePath = $this->getTemplatePath('article');
+            $templateData = [
                 'article' => $article->toArray(),
                 'prev' => $prev ? $prev->toArray() : null,
                 'next' => $next ? $next->toArray() : null,
@@ -250,7 +307,15 @@ class Build extends BaseController
                 'title' => $article->title,
                 'keywords' => $article->seo_keywords ?? '',
                 'description' => $article->seo_description ?? $article->summary
-            ]);
+            ];
+
+            trace('模板路径: ' . $templatePath, 'info');
+            trace('模板数据键: ' . implode(', ', array_keys($templateData)), 'info');
+
+            // 渲染模板（使用模板套装路径）
+            trace('开始渲染模板...', 'info');
+            $content = View::fetch($templatePath, $templateData);
+            trace('模板渲染成功，内容长度: ' . strlen($content), 'info');
 
             // 保存文件
             $filePath = $this->outputPath . 'article' . DIRECTORY_SEPARATOR . $id . '.html';
@@ -270,6 +335,9 @@ class Build extends BaseController
 
             return Response::success([], '文章生成成功');
         } catch (\Exception $e) {
+            trace('文章生成失败 [ID:' . $id . ']: ' . $e->getMessage(), 'error');
+            trace('错误详情: ' . $e->getTraceAsString(), 'error');
+
             StaticBuildLog::log(
                 $buildType,
                 StaticBuildLog::SCOPE_ARTICLE,
@@ -308,6 +376,10 @@ class Build extends BaseController
                 ->select()
                 ->toArray();
 
+            // 获取侧边栏数据
+            $categories = Category::select()->toArray();
+            $tags = Tag::where('status', 1)->limit(20)->select()->toArray();
+
             // 获取分类自定义模板，默认使用 category
             $template = $category->template ?? 'category';
 
@@ -319,7 +391,9 @@ class Build extends BaseController
                 'is_home' => false,
                 'title' => $category->name,
                 'keywords' => $category->name,
-                'description' => $category->description ?? $category->name
+                'description' => $category->description ?? $category->name,
+                'categories' => $categories,
+                'tags' => $tags
             ]);
 
             // 保存文件
@@ -364,11 +438,16 @@ class Build extends BaseController
         }
 
         try {
+            // 记录开始生成
+            trace('开始生成标签页，ID: ' . $id . ', 模板套装: ' . $this->currentTheme, 'info');
+
             // 获取标签信息
             $tag = Tag::find($id);
             if (!$tag) {
                 return Response::error('标签不存在');
             }
+
+            trace('标签数据加载完成: ' . json_encode($tag->toArray(), JSON_UNESCAPED_UNICODE), 'info');
 
             // 获取该标签下的文章
             $articles = $tag->articles()
@@ -378,16 +457,32 @@ class Build extends BaseController
                 ->select()
                 ->toArray();
 
-            // 渲染模板（使用模板套装路径）
-            $content = View::fetch($this->getTemplatePath('tag'), [
+            trace('标签下文章数量: ' . count($articles), 'info');
+
+            // 获取侧边栏数据
+            $categories = Category::select()->toArray();
+            $tags = Tag::where('status', 1)->limit(20)->select()->toArray();
+
+            $templatePath = $this->getTemplatePath('tag');
+            $templateData = [
                 'tag' => $tag->toArray(),
                 'articles' => $articles,
                 'config' => $this->config,
                 'is_home' => false,
                 'title' => $tag->name,
                 'keywords' => $tag->name,
-                'description' => $tag->description ?? $tag->name
-            ]);
+                'description' => $tag->description ?? $tag->name,
+                'categories' => $categories,
+                'tags' => $tags
+            ];
+
+            trace('模板路径: ' . $templatePath, 'info');
+            trace('模板数据键: ' . implode(', ', array_keys($templateData)), 'info');
+
+            // 渲染模板（使用模板套装路径）
+            trace('开始渲染模板...', 'info');
+            $content = View::fetch($templatePath, $templateData);
+            trace('模板渲染成功，内容长度: ' . strlen($content), 'info');
 
             // 保存文件
             $filePath = $this->outputPath . 'tag' . DIRECTORY_SEPARATOR . $id . '.html';
@@ -407,6 +502,9 @@ class Build extends BaseController
 
             return Response::success([], '标签页生成成功');
         } catch (\Exception $e) {
+            trace('标签页生成失败 [ID:' . $id . ']: ' . $e->getMessage(), 'error');
+            trace('错误详情: ' . $e->getTraceAsString(), 'error');
+
             StaticBuildLog::log(
                 StaticBuildLog::BUILD_TYPE_MANUAL,
                 'tag',

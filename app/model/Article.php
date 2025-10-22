@@ -90,6 +90,14 @@ class Article extends Model
     }
 
     /**
+     * 关联专题（多对多）
+     */
+    public function topics()
+    {
+        return $this->belongsToMany(Topic::class, TopicArticle::class, 'topic_id', 'article_id');
+    }
+
+    /**
      * 搜索器：标题
      */
     public function searchTitleAttr($query, $value)

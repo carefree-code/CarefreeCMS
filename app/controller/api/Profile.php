@@ -179,14 +179,14 @@ class Profile extends BaseController
             $fileName = 'avatar_' . $request->user['id'] . '_' . date('YmdHis') . '.' . $ext;
 
             // 创建目录（如果不存在）- 保存到html目录
-            $fullPath = root_path() . 'html' . DIRECTORY_SEPARATOR . $savePath;
+            $fullPath = app()->getRootPath() . 'html' . DIRECTORY_SEPARATOR . $savePath;
             if (!is_dir($fullPath)) {
                 mkdir($fullPath, 0755, true);
             }
 
             // 删除旧头像文件（如果存在）
             if ($user->avatar) {
-                $oldAvatarPath = root_path() . 'html' . DIRECTORY_SEPARATOR . $user->avatar;
+                $oldAvatarPath = app()->getRootPath() . 'html' . DIRECTORY_SEPARATOR . $user->avatar;
                 if (file_exists($oldAvatarPath)) {
                     @unlink($oldAvatarPath);
                 }

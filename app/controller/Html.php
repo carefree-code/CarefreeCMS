@@ -31,7 +31,7 @@ class Html
         Log::info('Extracted path: ' . $path);
 
         // 构建实际文件路径
-        $filePath = root_path() . 'html' . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $filePath = app()->getRootPath() . 'html' . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $path);
 
         Log::info('Looking for file: ' . $filePath);
 

@@ -122,7 +122,7 @@ class Media extends BaseController
             $fileName = date('YmdHis') . '_' . uniqid() . '.' . $ext;
 
             // 创建目录（如果不存在）- 保存到html目录
-            $fullPath = root_path() . 'html' . DIRECTORY_SEPARATOR . $savePath;
+            $fullPath = app()->getRootPath() . 'html' . DIRECTORY_SEPARATOR . $savePath;
             if (!is_dir($fullPath)) {
                 mkdir($fullPath, 0755, true);
             }
@@ -137,7 +137,7 @@ class Media extends BaseController
             $width = null;
             $height = null;
             if ($fileType === 'image') {
-                $imageInfo = getimagesize(root_path() . 'html' . DIRECTORY_SEPARATOR . $filePath);
+                $imageInfo = getimagesize(app()->getRootPath() . 'html' . DIRECTORY_SEPARATOR . $filePath);
                 if ($imageInfo) {
                     $width = $imageInfo[0];
                     $height = $imageInfo[1];
@@ -192,7 +192,7 @@ class Media extends BaseController
                 $message = '文件已移入回收站';
             } else {
                 // 物理删除：删除物理文件和数据库记录
-                $filePath = root_path() . 'html' . DIRECTORY_SEPARATOR . $media->file_path;
+                $filePath = app()->getRootPath() . 'html' . DIRECTORY_SEPARATOR . $media->file_path;
                 if (file_exists($filePath)) {
                     @unlink($filePath);
                 }

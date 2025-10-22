@@ -8,11 +8,11 @@
             <div style="color: #999; font-size: 14px;">
                 <span>分类：
                     <a href="/category/{$article.category_id}.html" style="color: #409EFF; text-decoration: none;">
-                        {$article.category.name|default='未分类'}
+                        {$article.category.name ?: '未分类'}
                     </a>
                 </span>
-                <span style="margin-left: 20px;">作者：{$article.user.real_name|default=$article.author|default='管理员'}</span>
-                <span style="margin-left: 20px;">发布时间：{$article.publish_time|default=$article.create_time}</span>
+                <span style="margin-left: 20px;">作者：{$article.user.real_name ?: ($article.author ?: '管理员')}</span>
+                <span style="margin-left: 20px;">发布时间：{$article.publish_time ?: $article.create_time}</span>
                 <span style="margin-left: 20px;">浏览量：{$article.view_count}</span>
             </div>
             {notempty name="article.tags"}

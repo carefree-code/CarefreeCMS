@@ -1,0 +1,488 @@
+{extend name="layout" /}
+
+{block name="style"}
+<style>
+    .article-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 6rem 0 4rem;
+        color: #fff;
+        text-align: center;
+    }
+
+    .article-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        line-height: 1.3;
+    }
+
+    .article-meta-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+    }
+
+    .article-meta-header i {
+        margin-right: 0.5rem;
+    }
+
+    /* 文章主体 */
+    .article-container {
+        margin-top: -3rem;
+        margin-bottom: 5rem;
+    }
+
+    .article-main {
+        background: #fff;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .article-cover {
+        width: 100%;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .article-tags {
+        margin-bottom: 2rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .article-tag {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        background: #f1f5f9;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        color: #667eea;
+        margin-right: 0.75rem;
+        margin-bottom: 0.5rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .article-tag:hover {
+        background: #667eea;
+        color: #fff;
+    }
+
+    .article-body {
+        font-size: 1.1rem;
+        line-height: 2;
+        color: #334155;
+    }
+
+    .article-body h2,
+    .article-body h3,
+    .article-body h4 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .article-body h2 {
+        font-size: 1.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    .article-body h3 {
+        font-size: 1.5rem;
+    }
+
+    .article-body p {
+        margin-bottom: 1.5rem;
+    }
+
+    .article-body img {
+        max-width: 100%;
+        border-radius: 10px;
+        margin: 2rem 0;
+    }
+
+    .article-body blockquote {
+        border-left: 4px solid #667eea;
+        padding-left: 1.5rem;
+        margin: 2rem 0;
+        color: #64748b;
+        font-style: italic;
+    }
+
+    .article-body code {
+        background: #f1f5f9;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        color: #667eea;
+    }
+
+    .article-body pre {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1.5rem;
+        border-radius: 10px;
+        overflow-x: auto;
+        margin: 2rem 0;
+    }
+
+    .article-body pre code {
+        background: transparent;
+        padding: 0;
+        color: inherit;
+    }
+
+    .article-body ul,
+    .article-body ol {
+        margin-bottom: 1.5rem;
+        padding-left: 2rem;
+    }
+
+    .article-body li {
+        margin-bottom: 0.5rem;
+    }
+
+    .article-footer {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .article-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .action-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        border: 1px solid #e2e8f0;
+        background: #fff;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .action-btn:hover {
+        background: #667eea;
+        color: #fff;
+        border-color: #667eea;
+        transform: translateY(-2px);
+    }
+
+    .share-buttons {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .share-btn {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .share-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .share-btn.wechat:hover {
+        background: #09bb07;
+        color: #fff;
+    }
+
+    .share-btn.weibo:hover {
+        background: #e6162d;
+        color: #fff;
+    }
+
+    .share-btn.qq:hover {
+        background: #12b7f5;
+        color: #fff;
+    }
+
+    .share-btn.link:hover {
+        background: #667eea;
+        color: #fff;
+    }
+
+    /* 作者信息 */
+    .author-card {
+        background: #f8fafc;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-top: 3rem;
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .author-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .author-info h5 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+    }
+
+    .author-info p {
+        color: #64748b;
+        margin: 0;
+    }
+
+    /* 相关文章 */
+    .related-articles {
+        margin-top: 4rem;
+    }
+
+    .related-articles h3 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        color: #1e293b;
+    }
+
+    .related-card {
+        background: #fff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+
+    .related-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .related-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .related-content {
+        padding: 1.5rem;
+    }
+
+    .related-content h5 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        color: #1e293b;
+    }
+
+    .related-content h5 a {
+        color: #1e293b;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .related-content h5 a:hover {
+        color: #667eea;
+    }
+
+    .related-meta {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    /* 评论区 */
+    .comments-section {
+        margin-top: 4rem;
+        background: #fff;
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .comments-section h3 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        color: #1e293b;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+        .article-header h1 {
+            font-size: 1.75rem;
+        }
+
+        .article-main {
+            padding: 2rem 1.5rem;
+        }
+
+        .article-meta-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .author-card {
+            flex-direction: column;
+            text-align: center;
+        }
+    }
+</style>
+{/block}
+
+{block name="content"}
+<!-- 文章头部 -->
+<div class="article-header">
+    <div class="container">
+        <h1 data-aos="fade-up">{$article.title}</h1>
+        <div class="article-meta-header" data-aos="fade-up" data-aos-delay="100">
+            <span><i class="bi bi-calendar"></i> {$article.create_time|date='Y-m-d H:i'}</span>
+            <span><i class="bi bi-person"></i> {$article.user.username ?: '管理员'}</span>
+            <span><i class="bi bi-eye"></i> {$article.view_count ?: 0} 阅读</span>
+            {if condition="$article.categories"}
+            <span><i class="bi bi-folder"></i>
+                {volist name="article.categories" id="cat"}
+                {$cat.name}{if condition="!$key_last"}, {/if}
+                {/volist}
+            </span>
+            {/if}
+        </div>
+    </div>
+</div>
+
+<div class="container article-container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- 文章主体 -->
+            <article class="article-main" data-aos="fade-up">
+                {if condition="$article.cover_image"}
+                <img src="{$article.cover_image}" alt="{$article.title}" class="article-cover">
+                {/if}
+
+                {if condition="$article.tags"}
+                <div class="article-tags">
+                    {volist name="article.tags" id="tag"}
+                    <a href="/tag-{$tag.id}.html" class="article-tag">#{$tag.name}</a>
+                    {/volist}
+                </div>
+                {/if}
+
+                <div class="article-body">
+                    {$article.content|raw}
+                </div>
+
+                <div class="article-footer">
+                    <!-- 操作按钮 -->
+                    <div class="article-actions">
+                        <a href="#" class="action-btn">
+                            <i class="bi bi-hand-thumbs-up"></i> 点赞
+                        </a>
+                        <a href="#" class="action-btn">
+                            <i class="bi bi-bookmark"></i> 收藏
+                        </a>
+                        <a href="#comments" class="action-btn">
+                            <i class="bi bi-chat"></i> 评论
+                        </a>
+                    </div>
+
+                    <!-- 分享按钮 -->
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="text-secondary">分享到：</span>
+                        <div class="share-buttons">
+                            <a href="#" class="share-btn wechat" title="分享到微信">
+                                <i class="bi bi-wechat"></i>
+                            </a>
+                            <a href="#" class="share-btn weibo" title="分享到微博">
+                                <i class="bi bi-share"></i>
+                            </a>
+                            <a href="#" class="share-btn qq" title="分享到QQ">
+                                <i class="bi bi-chat-square"></i>
+                            </a>
+                            <a href="#" class="share-btn link" title="复制链接">
+                                <i class="bi bi-link-45deg"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 作者信息 -->
+                {if condition="$article.user"}
+                <div class="author-card" data-aos="fade-up">
+                    <img src="{$article.user.avatar ?: '/assets/images/placeholder/avatar.svg'}" alt="{$article.user.username}" class="author-avatar">
+                    <div class="author-info">
+                        <h5>{$article.user.username}</h5>
+                        <p>{$article.user.bio ?: '这个作者很懒，什么都没有留下...'}</p>
+                    </div>
+                </div>
+                {/if}
+            </article>
+
+            <!-- 相关文章 -->
+            {if condition="$related_articles && count($related_articles) > 0"}
+            <div class="related-articles" data-aos="fade-up">
+                <h3>相关文章</h3>
+                <div class="row g-4">
+                    {volist name="related_articles" id="related" offset="0" length="3"}
+                    <div class="col-md-4">
+                        <div class="related-card">
+                            <img src="{$related.cover_image ?: '/assets/images/placeholder/article-small.svg'}" alt="{$related.title}" class="related-image">
+                            <div class="related-content">
+                                <h5><a href="/article-{$related.id}.html">{$related.title}</a></h5>
+                                <p class="related-meta">
+                                    <i class="bi bi-calendar"></i> {$related.create_time|date='Y-m-d'}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {/volist}
+                </div>
+            </div>
+            {/if}
+
+            <!-- 评论区 -->
+            <div id="comments" class="comments-section" data-aos="fade-up">
+                <h3>评论 ({$comment_count ?: 0})</h3>
+                <div class="text-center text-secondary py-4">
+                    <i class="bi bi-chat-dots" style="font-size: 3rem; opacity: 0.3;"></i>
+                    <p class="mt-2">暂无评论，来抢沙发吧！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script>
+    // 复制链接
+    document.querySelector('.share-btn.link').addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(function() {
+            alert('链接已复制到剪贴板！');
+        });
+    });
+</script>
+{/block}

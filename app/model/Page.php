@@ -4,17 +4,22 @@ declare(strict_types=1);
 namespace app\model;
 
 use think\Model;
+use think\model\concern\SoftDelete;
 
 /**
  * 单页模型
  */
 class Page extends Model
 {
+    use SoftDelete;
+
     protected $name = 'pages';
 
     protected $autoWriteTimestamp = true;
     protected $createTime = 'create_time';
     protected $updateTime = 'update_time';
+    protected $deleteTime = 'deleted_at';
+    protected $defaultSoftDelete = null;
 
     protected $type = [
         'sort'   => 'integer',

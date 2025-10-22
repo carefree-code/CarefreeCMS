@@ -15,15 +15,15 @@
             <div style="color: #999; font-size: 14px; margin-bottom: 10px;">
                 <span>分类：
                     <a href="/category/{$article.category_id}.html" style="color: #409EFF; text-decoration: none;">
-                        {$article.category.name|default='未分类'}
+                        {$article.category.name ?: '未分类'}
                     </a>
                 </span>
-                <span style="margin-left: 20px;">作者：{$article.user.real_name|default=$article.author|default='管理员'}</span>
-                <span style="margin-left: 20px;">发布时间：{$article.publish_time|default=$article.create_time}</span>
+                <span style="margin-left: 20px;">作者：{$article.user.real_name ?: ($article.author ?: '管理员')}</span>
+                <span style="margin-left: 20px;">发布时间：{$article.publish_time ?: $article.create_time}</span>
                 <span style="margin-left: 20px;">浏览量：{$article.view_count}</span>
             </div>
             <p style="color: #666; line-height: 1.8;">
-                {$article.summary|default='暂无摘要'}
+                {$article.summary ?: '暂无摘要'}
             </p>
             {notempty name="article.tags"}
             <div style="margin-top: 10px;">
@@ -47,23 +47,7 @@
     <!-- 分页导航 -->
     {notempty name="pagination"}
     <div style="margin-top: 30px; text-align: center;">
-        <div style="display: inline-block;">
-            {if $pagination.current_page > 1}
-            <a href="/articles-{$pagination.current_page - 1}.html" style="display: inline-block; padding: 8px 15px; margin: 0 5px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333;">上一页</a>
-            {/if}
-
-            {for start="1" end="$pagination.total_pages + 1"}
-            {if $i == $pagination.current_page}
-            <span style="display: inline-block; padding: 8px 15px; margin: 0 5px; background: #409EFF; color: #fff; border-radius: 4px;">{$i}</span>
-            {else /}
-            <a href="/articles{if $i > 1}-{$i}{/if}.html" style="display: inline-block; padding: 8px 15px; margin: 0 5px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333;">{$i}</a>
-            {/if}
-            {/for}
-
-            {if $pagination.current_page < $pagination.total_pages}
-            <a href="/articles-{$pagination.current_page + 1}.html" style="display: inline-block; padding: 8px 15px; margin: 0 5px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #333;">下一页</a>
-            {/if}
-        </div>
+        {$pagination|raw}
     </div>
     {/notempty}
 </div>

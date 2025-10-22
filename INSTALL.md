@@ -1,6 +1,6 @@
 # 逍遥内容管理系统 - 安装指南
 
-本文档详细说明如何安装和配置逍遥内容管理系统（CarefreeC MS）。
+本文档详细说明如何安装和配置逍遥内容管理系统（CarefreeCMS）。
 
 ## 环境要求
 
@@ -90,32 +90,90 @@ return [
 ];
 ```
 
-#### 2.3 导入数据库
+#### 2.3 配置环境变量
+
+复制并配置环境变量文件：
 
 ```bash
-# 创建数据库
-mysql -u root -p -e "CREATE DATABASE carefreecms DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
-
-# 导入数据库结构和数据
-mysql -u root -p carefreecms < database.sql
+cd api
+cp .env.example .env
 ```
 
-#### 2.4 配置目录权限
+编辑 `.env` 文件，配置数据库和JWT密钥：
+
+```ini
+[DATABASE]
+DB_HOST = 127.0.0.1
+DB_NAME = cms_database
+DB_USER = root
+DB_PASS = your_database_password
+DB_PORT = 3306
+DB_CHARSET = utf8mb4
+
+[JWT]
+# 生成强随机密钥（必需！）
+# 使用命令：php -r "echo base64_encode(random_bytes(32));"
+JWT_SECRET = your_strong_random_secret_key_here
+JWT_EXPIRE = 7200
+
+[CORS]
+# 开发环境允许的前端地址
+CORS_ALLOWED_ORIGINS = http://localhost:5173,http://localhost:3000
+```
+
+> ⚠️ **安全警告**:
+> - 必须设置强随机 JWT_SECRET，不能使用默认值
+> - 生产环境请使用复杂的数据库密码
+
+#### 2.4 导入数据库
+
+按以下顺序导入SQL文件（从项目 `docs/` 目录）：
+
+```bash
+# 1. 创建数据库
+mysql -u root -p -e "CREATE DATABASE cms_database DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# 2. 导入基础设计（必需）
+mysql -u root -p cms_database < docs/database_design.sql
+
+# 3. 导入系统管理表（必需）
+mysql -u root -p cms_database < docs/database_system.sql
+
+# 4. 导入其他功能模块（可选）
+mysql -u root -p cms_database < docs/database_template_theme.sql  # 模板主题
+mysql -u root -p cms_database < docs/database_article_versions.sql  # 文章版本
+mysql -u root -p cms_database < docs/database_topics.sql           # 专题管理
+mysql -u root -p cms_database < docs/database_custom_fields_and_models.sql  # 自定义字段
+mysql -u root -p cms_database < docs/database_links_and_ads.sql    # 友链和广告
+mysql -u root -p cms_database < docs/database_sliders.sql          # 幻灯片
+mysql -u root -p cms_database < docs/database_seo.sql              # SEO功能
+```
+
+> 💡 **提示**: 如需完整功能，建议导入所有SQL文件
+
+#### 2.5 配置目录权限
 
 ```bash
 # 确保以下目录可写
 chmod -R 755 api/runtime
 chmod -R 755 api/public/uploads
-chmod -R 755 api/html
+chmod -R 755 api/html  # 静态文件生成目录（在api目录下）
 ```
 
-#### 2.5 测试后端服务
+> 📁 **目录说明**:
+> - `runtime/`: 框架运行时缓存
+> - `public/uploads/`: 文件上传目录
+> - `html/`: 静态化HTML文件目录（在api目录下，需手动创建）
+
+#### 2.6 测试后端服务
 
 ```bash
-# 开发环境
+# 在 api 目录下启动开发服务器
+cd api
 php think run
 
-# 访问 http://localhost:8000 测试API
+# 访问 http://localhost:8000/api 测试API
+# 测试接口: http://localhost:8000/api/auth/login
 ```
 
 ### 3. 安装前端
@@ -143,7 +201,131 @@ npm run dev
 
 前端将运行在 `http://localhost:5173`
 
-### 4. 默认账号
+### 4. 前后端联调验证
+
+#### 4.1 测试登录功能
+
+```bash
+# 使用 curl 测试登录接口
+curl -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+
+# 预期返回包含 token 的JSON响应
+```
+
+#### 4.2 访问管理后台
+
+1. 打开浏览器访问: `http://localhost:5173`
+2. 使用默认账号登录（见下文）
+3. 检查各功能模块是否正常
+
+#### 4.3 常见联调问题
+
+**问题1: CORS跨域错误**
+
+确保后端 `.env` 文件中配置了正确的 CORS_ALLOWED_ORIGINS：
+
+```ini
+CORS_ALLOWED_ORIGINS = http://localhost:5173,http://localhost:3000
+```
+
+**问题2: 401未授权错误**
+
+检查：
+- JWT_SECRET 是否正确配置
+- token 是否已过期
+- 请求头是否包含 Authorization
+
+**问题3: 接口404错误**
+
+确认：
+- 后端服务是否启动（php think run）
+- API基础地址是否正确（http://localhost:8000/api）
+- 路由配置是否正确
+
+### 5. 静态化功能配置
+
+#### 5.1 创建静态文件目录和占位图
+
+```bash
+# 在 api 目录下创建 html 目录
+cd api
+mkdir -p html
+mkdir -p html/assets/images/placeholder
+
+# 设置写入权限
+chmod -R 755 html
+```
+
+**占位图文件**：
+
+系统已内置本地占位图（SVG格式），无需依赖外部服务，位于：
+- `api/html/assets/images/placeholder/article.svg` - 文章封面占位图
+- `api/html/assets/images/placeholder/avatar.svg` - 用户头像占位图
+- `api/html/assets/images/placeholder/dashboard.svg` - 仪表板占位图
+- 其他占位图文件...
+
+这些占位图会在模板渲染时自动使用，不需要额外配置。
+
+#### 5.2 配置静态化路径
+
+静态文件将生成到 `api/html/` 目录，目录结构：
+
+```
+api/html/
+├── assets/        # 静态资源
+│   └── images/
+│       └── placeholder/  # 占位图
+├── article/       # 文章静态页
+│   ├── 1.html
+│   └── ...
+├── category/      # 分类静态页
+│   ├── news.html
+│   └── ...
+├── page/          # 单页静态页
+├── index.html     # 首页
+└── sitemap.xml    # 站点地图
+```
+
+#### 5.3 触发静态化
+
+**方式1: 管理后台操作**
+1. 登录后台
+2. 进入 **内容管理** > **文章管理**
+3. 编辑文章，点击"发布"或"生成静态页"按钮
+
+**方式2: API调用**
+
+```bash
+# 生成指定文章的静态页
+curl -X POST http://localhost:8000/api/articles/1/generate-static \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# 批量生成所有文章静态页
+curl -X POST http://localhost:8000/api/static/generate-all \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+#### 5.4 访问静态页面
+
+配置Nginx或其他Web服务器指向 `api/html/` 目录，即可通过浏览器访问静态页面。
+
+示例Nginx配置：
+```nginx
+server {
+    listen 80;
+    server_name www.example.com;
+    root /path/to/cms/api/html;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+```
+
+### 6. 默认账号
 
 安装完成后，使用以下账号登录：
 

@@ -3,15 +3,20 @@
 namespace app\model;
 
 use think\Model;
+use think\model\concern\SoftDelete;
 
 /**
  * 分类模型
  */
 class Category extends Model
 {
+    use SoftDelete;
+
     protected $name = 'categories';
 
     protected $autoWriteTimestamp = true;
+    protected $deleteTime = 'deleted_at';
+    protected $defaultSoftDelete = null;
 
     protected $type = [
         'parent_id' => 'integer',
