@@ -1,6 +1,6 @@
 # 逍遥内容管理系统 (CarefreeCMS)
 
-![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)
 ![PHP](https://img.shields.io/badge/php-8.1+-green.svg)
 ![Vue](https://img.shields.io/badge/vue-3.5-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
@@ -195,7 +195,7 @@ carefreecms/
 ### 1. 克隆项目
 
 ```bash
-git clone https://gitee.com/sinma/carefreecms.git
+git clone https://gitee.com/carefreeteam/carefreecms.git
 
 ```
 
@@ -290,6 +290,15 @@ npm run build
 
 ## 更新日志
 
+### v1.2.0 (2025-10-23)
+- ✨ 新增媒体库选择器组件，支持从媒体库插入文件到文章编辑器
+- ✨ 优化Sitemap生成页面布局，基础格式和高级类型并排显示
+- ✨ 完善静态页面生成功能，修复分类、标签、专题、文章页面生成错误
+- 🐛 修复分类和标签模板中的分页代码错误
+- 🐛 修复文章模板中categories字段引用错误
+- 🐛 修复topic方法中缺少->toArray()调用的问题
+- 🐛 为文章生成添加相关文章和评论数量字段
+
 ### v1.1.0 (2025-10-21)
 - ✨ 新增缓存驱动切换功能，支持File和Redis两种驱动
 - ✨ 优化Sitemap生成界面，合并基础格式和高级类型为单页
@@ -314,7 +323,7 @@ npm run build
 ## 联系我们
 
 - **官网**: https://www.carefreecms.com
-- **问题反馈**: https://gitee.com/sinma/carefreecms/issues
+- **问题反馈**: https://gitee.com/carefreeteam/issues
 - **邮箱**: sinma@qq.com
 
 ## 致谢

@@ -12,6 +12,7 @@
 # 上传文件
 /public/uploads/*
 !/public/uploads/.gitignore
+/html/*
 
 # 静态生成文件
 /public/static/*

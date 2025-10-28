@@ -28,6 +28,9 @@ Route::group('api', function () {
         Route::get('dashboard/system-info', 'app\controller\api\Dashboard@systemInfo'); // 获取系统信息
 
         // 文章管理
+        Route::get('articles/fulltext-search', 'app\controller\api\Article@fullTextSearch');       // 全文搜索
+        Route::get('articles/advanced-search', 'app\controller\api\Article@advancedSearch');       // 高级搜索
+        Route::get('articles/search-suggestions', 'app\controller\api\Article@searchSuggestions'); // 搜索建议
         Route::resource('articles', 'app\controller\api\Article');                // RESTful文章资源
         Route::post('articles/:id/publish', 'app\controller\api\Article@publish');  // 发布文章
         Route::post('articles/:id/offline', 'app\controller\api\Article@offline');  // 下线文章
@@ -92,6 +95,17 @@ Route::group('api', function () {
         Route::post('operation-logs/clear', 'app\controller\api\OperationLog@clear'); // 清空日志
 
         // 模板管理（注意：更具体的路由要放在前面）
+        // 在线模板编辑（必须放在最前面，避免被 templates 通用路由匹配）
+        Route::get('templates/file-tree', 'app\controller\api\Template@getFileTree');     // 获取文件树
+        Route::get('templates/read-file', 'app\controller\api\Template@readFile');        // 读取文件
+        Route::post('templates/save-file', 'app\controller\api\Template@saveFile');       // 保存文件
+        Route::post('templates/create-file', 'app\controller\api\Template@createFile');   // 创建文件
+        Route::post('templates/delete-file', 'app\controller\api\Template@deleteFile');   // 删除文件
+        Route::get('templates/backups', 'app\controller\api\Template@getBackups');        // 获取历史记录列表
+        Route::get('templates/history-content', 'app\controller\api\Template@getHistoryContent'); // 获取历史版本内容
+        Route::post('templates/restore-history', 'app\controller\api\Template@restoreHistory');   // 恢复历史版本
+
+        // 模板套装管理
         Route::get('templates/current-theme', 'app\controller\api\Template@getCurrentTheme'); // 获取当前模板套装
         Route::get('templates/themes', 'app\controller\api\Template@scanThemes');  // 扫描所有模板套装
         Route::get('templates/scan', 'app\controller\api\Template@scanTemplates'); // 扫描模板文件
@@ -103,12 +117,20 @@ Route::group('api', function () {
         Route::post('build/index', 'app\controller\api\Build@index');             // 生成首页
         Route::post('build/articles', 'app\controller\api\Build@articles');       // 生成文章列表页
         Route::post('build/article/:id', 'app\controller\api\Build@article');     // 生成文章详情页
-        Route::post('build/category/:id', 'app\controller\api\Build@category');   // 生成分类列表页
+        Route::post('build/categories', 'app\controller\api\Build@categories');   // 生成所有分类页
+        Route::post('build/category/:id', 'app\controller\api\Build@category');   // 生成单个分类页
         Route::post('build/tags', 'app\controller\api\Build@tags');               // 生成所有标签页
         Route::post('build/tag/:id', 'app\controller\api\Build@tag');             // 生成单个标签页
+        Route::post('build/topics', 'app\controller\api\Build@topics');           // 生成所有专题页
+        Route::post('build/topic/:id', 'app\controller\api\Build@topic');         // 生成单个专题页
         Route::post('build/pages', 'app\controller\api\Build@pages');             // 生成所有单页面
         Route::post('build/page/:id', 'app\controller\api\Build@page');           // 生成单个单页面
         Route::get('build/logs', 'app\controller\api\Build@logs');                // 生成日志
+
+        // 模板资源管理
+        Route::post('build/sync-assets', 'app\controller\api\Build@syncAssets');  // 同步模板资源到静态目录
+        Route::post('build/clean-assets', 'app\controller\api\Build@cleanAssets'); // 清理旧资源
+        Route::get('build/assets-list', 'app\controller\api\Build@getAssetsList'); // 获取资源列表
 
         // Sitemap生成
         Route::post('sitemap/all', 'app\controller\api\Sitemap@generateAll');     // 生成所有格式sitemap

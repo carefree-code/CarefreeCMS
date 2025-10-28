@@ -561,4 +561,312 @@ class Article extends BaseController
             trace('自动生成静态页面失败: ' . $e->getMessage(), 'error');
         }
     }
+
+    /**
+     * 全文搜索
+     * 使用 MySQL FULLTEXT INDEX 进行搜索
+     */
+    public function fullTextSearch(Request $request)
+    {
+        $keyword = $request->get('keyword', '');
+        $page = $request->get('page', 1);
+        $pageSize = $request->get('page_size', 20);
+        $mode = $request->get('mode', 'natural'); // natural, boolean, query_expansion
+        $categoryId = $request->get('category_id', '');
+        $status = $request->get('status', '');
+        $startTime = $request->get('start_time', '');
+        $endTime = $request->get('end_time', '');
+
+        if (empty($keyword)) {
+            return Response::error('搜索关键词不能为空');
+        }
+
+        // 构建基础查询
+        $query = ArticleModel::with(['category', 'user', 'tags', 'categories', 'topics']);
+
+        // 根据模式选择搜索方式
+        switch ($mode) {
+            case 'boolean':
+                // 布尔模式：支持 +word -word "phrase" 等操作符
+                $query->whereRaw(
+                    "MATCH(title, content) AGAINST(? IN BOOLEAN MODE)",
+                    [$keyword]
+                );
+                break;
+            case 'query_expansion':
+                // 查询扩展模式：自动扩展相关词
+                $query->whereRaw(
+                    "MATCH(title, content) AGAINST(? WITH QUERY EXPANSION)",
+                    [$keyword]
+                );
+                break;
+            default:
+                // 自然语言模式（默认）
+                $query->whereRaw(
+                    "MATCH(title, content) AGAINST(?)",
+                    [$keyword]
+                );
+                break;
+        }
+
+        // 添加额外过滤条件
+        if ($categoryId !== '') {
+            $query->where(function($q) use ($categoryId) {
+                $q->where('category_id', $categoryId)
+                  ->whereOr('id', 'in', function($subQuery) use ($categoryId) {
+                      $subQuery->table('article_categories')
+                               ->where('category_id', $categoryId)
+                               ->field('article_id');
+                  });
+            });
+        }
+
+        if ($status !== '') {
+            $query->where('status', $status);
+        }
+
+        if (!empty($startTime)) {
+            $query->where('publish_time', '>=', $startTime);
+        }
+
+        if (!empty($endTime)) {
+            $query->where('publish_time', '<=', $endTime . ' 23:59:59');
+        }
+
+        // 计算相关度得分并排序
+        if ($mode === 'natural' || $mode === 'query_expansion') {
+            $query->field([
+                '*',
+                'MATCH(title, content) AGAINST(?) as relevance_score'
+            ], [$keyword]);
+            $query->order('relevance_score', 'desc');
+        } else {
+            $query->order(['is_top' => 'desc', 'publish_time' => 'desc']);
+        }
+
+        // 获取总数
+        $total = $query->count();
+
+        // 分页查询
+        $list = $query->page($page, $pageSize)->select();
+
+        // 处理数据
+        $listData = $list->toArray();
+        foreach ($listData as &$item) {
+            // 添加副分类信息
+            if (isset($item['categories'])) {
+                $item['sub_categories'] = array_filter($item['categories'], function($cat) {
+                    return $cat['pivot']['is_main'] == 0;
+                });
+            }
+
+            // 高亮关键词（用于前端显示）
+            $item['highlighted_title'] = $this->highlightKeyword($item['title'], $keyword);
+            $item['highlighted_summary'] = $this->highlightKeyword(
+                $item['summary'] ?? mb_substr(strip_tags($item['content']), 0, 200),
+                $keyword
+            );
+        }
+
+        return Response::paginate($listData, $total, $page, $pageSize);
+    }
+
+    /**
+     * 高级搜索
+     * 支持多字段组合搜索
+     */
+    public function advancedSearch(Request $request)
+    {
+        $page = $request->get('page', 1);
+        $pageSize = $request->get('page_size', 20);
+
+        // 搜索条件
+        $title = $request->get('title', '');
+        $content = $request->get('content', '');
+        $summary = $request->get('summary', '');
+        $author = $request->get('author', '');
+        $categoryId = $request->get('category_id', '');
+        $tagIds = $request->get('tag_ids', ''); // 逗号分隔的标签ID
+        $userId = $request->get('user_id', '');
+        $status = $request->get('status', '');
+        $isTop = $request->get('is_top', '');
+        $isRecommend = $request->get('is_recommend', '');
+        $isHot = $request->get('is_hot', '');
+        $startTime = $request->get('start_time', '');
+        $endTime = $request->get('end_time', '');
+        $minViews = $request->get('min_views', '');
+        $maxViews = $request->get('max_views', '');
+        $sortBy = $request->get('sort_by', 'publish_time'); // publish_time, view_count, like_count
+        $sortOrder = $request->get('sort_order', 'desc'); // asc, desc
+
+        // 构建查询
+        $query = ArticleModel::with(['category', 'user', 'tags', 'categories', 'topics']);
+
+        // 标题搜索
+        if (!empty($title)) {
+            $query->where('title', 'like', '%' . $title . '%');
+        }
+
+        // 内容搜索
+        if (!empty($content)) {
+            $query->where('content', 'like', '%' . $content . '%');
+        }
+
+        // 摘要搜索
+        if (!empty($summary)) {
+            $query->where('summary', 'like', '%' . $summary . '%');
+        }
+
+        // 作者名搜索
+        if (!empty($author)) {
+            $query->where('id', 'in', function($subQuery) use ($author) {
+                $subQuery->table('admin_users')
+                         ->where('username', 'like', '%' . $author . '%')
+                         ->whereOr('real_name', 'like', '%' . $author . '%')
+                         ->field('id');
+            });
+        }
+
+        // 分类筛选
+        if ($categoryId !== '') {
+            $query->where(function($q) use ($categoryId) {
+                $q->where('category_id', $categoryId)
+                  ->whereOr('id', 'in', function($subQuery) use ($categoryId) {
+                      $subQuery->table('article_categories')
+                               ->where('category_id', $categoryId)
+                               ->field('article_id');
+                  });
+            });
+        }
+
+        // 标签筛选（支持多个标签）
+        if (!empty($tagIds)) {
+            $tagIdArray = explode(',', $tagIds);
+            $query->where('id', 'in', function($subQuery) use ($tagIdArray) {
+                $subQuery->table('article_tags')
+                         ->whereIn('tag_id', $tagIdArray)
+                         ->field('article_id');
+            });
+        }
+
+        // 用户筛选
+        if ($userId !== '') {
+            $query->where('user_id', $userId);
+        }
+
+        // 状态筛选
+        if ($status !== '') {
+            $query->where('status', $status);
+        }
+
+        // 置顶筛选
+        if ($isTop !== '') {
+            $query->where('is_top', $isTop);
+        }
+
+        // 推荐筛选
+        if ($isRecommend !== '') {
+            $query->where('is_recommend', $isRecommend);
+        }
+
+        // 热门筛选
+        if ($isHot !== '') {
+            $query->where('is_hot', $isHot);
+        }
+
+        // 时间范围筛选
+        if (!empty($startTime)) {
+            $query->where('publish_time', '>=', $startTime);
+        }
+        if (!empty($endTime)) {
+            $query->where('publish_time', '<=', $endTime . ' 23:59:59');
+        }
+
+        // 浏览量范围筛选
+        if ($minViews !== '') {
+            $query->where('view_count', '>=', $minViews);
+        }
+        if ($maxViews !== '') {
+            $query->where('view_count', '<=', $maxViews);
+        }
+
+        // 排序
+        $allowedSortFields = ['publish_time', 'view_count', 'like_count', 'comment_count', 'create_time', 'update_time'];
+        if (in_array($sortBy, $allowedSortFields)) {
+            $query->order($sortBy, $sortOrder === 'asc' ? 'asc' : 'desc');
+        } else {
+            $query->order(['is_top' => 'desc', 'publish_time' => 'desc']);
+        }
+
+        // 获取总数
+        $total = $query->count();
+
+        // 分页查询
+        $list = $query->page($page, $pageSize)->select();
+
+        // 处理数据
+        $listData = $list->toArray();
+        foreach ($listData as &$item) {
+            if (isset($item['categories'])) {
+                $item['sub_categories'] = array_filter($item['categories'], function($cat) {
+                    return $cat['pivot']['is_main'] == 0;
+                });
+            }
+        }
+
+        return Response::paginate($listData, $total, $page, $pageSize);
+    }
+
+    /**
+     * 搜索建议（自动完成）
+     * 基于文章标题提供搜索建议
+     */
+    public function searchSuggestions(Request $request)
+    {
+        $keyword = $request->get('keyword', '');
+        $limit = $request->get('limit', 10);
+
+        if (empty($keyword)) {
+            return Response::success([]);
+        }
+
+        // 搜索匹配的文章标题
+        $articles = ArticleModel::where('title', 'like', '%' . $keyword . '%')
+            ->where('status', 1) // 只搜索已发布的文章
+            ->field(['id', 'title', 'view_count'])
+            ->order('view_count', 'desc')
+            ->limit($limit)
+            ->select();
+
+        $suggestions = [];
+        foreach ($articles as $article) {
+            $suggestions[] = [
+                'id' => $article->id,
+                'title' => $article->title,
+                'view_count' => $article->view_count
+            ];
+        }
+
+        return Response::success($suggestions);
+    }
+
+    /**
+     * 高亮关键词
+     */
+    private function highlightKeyword($text, $keyword)
+    {
+        if (empty($text) || empty($keyword)) {
+            return $text;
+        }
+
+        // 转义特殊字符
+        $keyword = preg_quote($keyword, '/');
+
+        // 高亮匹配的关键词（不区分大小写）
+        return preg_replace(
+            '/(' . $keyword . ')/iu',
+            '<mark>$1</mark>',
+            $text
+        );
+    }
 }

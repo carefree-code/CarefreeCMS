@@ -1,0 +1,417 @@
+/**
+ * Index.css - 首页样式
+ * 包含英雄区、特性区、统计数据、案例展示、CTA、友情链接、广告等模块样式
+ */
+
+/* ========== 英雄区 ========== */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 8rem 0 6rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,197.3C1248,203,1344,149,1392,122.7L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+    opacity: 0.5;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.95;
+}
+
+.hero-buttons .btn {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.btn-light-custom {
+    background: #fff;
+    color: #667eea;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-light-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-outline-light-custom {
+    border: 2px solid #fff;
+    color: #fff;
+    background: transparent;
+}
+
+.btn-outline-light-custom:hover {
+    background: #fff;
+    color: #667eea;
+}
+
+.hero-image {
+    position: relative;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+.hero-image img {
+    max-width: 100%;
+    filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+}
+
+/* ========== 特性区块 ========== */
+.features-section {
+    padding: 6rem 0;
+    background: #f8fafc;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-title h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.section-title p {
+    font-size: 1.1rem;
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.feature-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: 1px solid #e2e8f0;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.feature-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: #fff;
+}
+
+.feature-card h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.feature-card p {
+    color: #64748b;
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* ========== 统计数据区 ========== */
+.stats-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 5rem 0;
+    color: #fff;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.stat-label {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* ========== 案例展示区 ========== */
+.showcase-section {
+    padding: 6rem 0;
+    background: #fff;
+}
+
+.showcase-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.showcase-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.showcase-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+}
+
+.showcase-content {
+    padding: 2rem;
+}
+
+.showcase-content h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.showcase-content p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.showcase-tag {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    color: #667eea;
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* ========== CTA区块 ========== */
+.cta-section {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    padding: 6rem 0;
+    color: #fff;
+    text-align: center;
+}
+
+.cta-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.cta-section p {
+    font-size: 1.25rem;
+    margin-bottom: 2.5rem;
+    opacity: 0.9;
+}
+
+/* ========== 友情链接样式 ========== */
+.link-item {
+    display: block;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #e0e0e0;
+}
+
+.link-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.link-logo {
+    max-width: 100%;
+    height: 50px;
+    object-fit: contain;
+}
+
+.link-text {
+    font-size: 14px;
+    font-weight: 500;
+    padding: 15px 5px;
+}
+
+/* ========== 广告位样式 ========== */
+.ad-container {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.ad-item {
+    display: block;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    text-decoration: none;
+}
+
+.ad-item:hover {
+    transform: scale(1.02);
+}
+
+.ad-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 顶部广告 */
+.top-ads-section {
+    background: #fff;
+    padding: 30px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.top-ad-item {
+    display: block;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.top-ad-item:hover {
+    opacity: 0.9;
+}
+
+.top-ad-item img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+/* 侧边广告 */
+.side-ads-container {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    max-width: 200px;
+    display: none;
+}
+
+@media (min-width: 1400px) {
+    .side-ads-container {
+        display: block;
+    }
+}
+
+.side-ad-item {
+    display: block;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    background: #fff;
+}
+
+.side-ad-item:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.side-ad-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* ========== 轮播图样式调整 ========== */
+.slider-section {
+    margin-bottom: 40px;
+}
+
+.carousel-caption h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.carousel-caption p {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .section-title h2 {
+        font-size: 2rem;
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+    }
+
+    .carousel-caption h2 {
+        font-size: 1.5rem;
+    }
+
+    .carousel-caption p {
+        font-size: 0.9rem;
+    }
+
+    .link-logo {
+        height: 40px;
+    }
+}

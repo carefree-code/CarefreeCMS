@@ -22,9 +22,36 @@ class EnhancedSitemapGenerator
         $this->baseUrl = $baseUrl ?: request()->domain();
         $this->sitemapDir = app()->getRootPath() . 'html/';
 
-        // 确保目录存在
+        // 确保目录存在并可写
+        $this->ensureDirectoryWritable();
+    }
+
+    /**
+     * 确保目录存在且可写
+     * @throws \Exception
+     */
+    private function ensureDirectoryWritable()
+    {
+        // 如果目录不存在，尝试创建
         if (!is_dir($this->sitemapDir)) {
-            mkdir($this->sitemapDir, 0755, true);
+            if (!@mkdir($this->sitemapDir, 0755, true)) {
+                throw new \Exception(
+                    "无法创建sitemap目录: {$this->sitemapDir}\n" .
+                    "请手动创建目录或检查父目录权限。\n" .
+                    "建议执行: mkdir -p {$this->sitemapDir} && chmod 755 {$this->sitemapDir}"
+                );
+            }
+        }
+
+        // 检查目录是否可写
+        if (!is_writable($this->sitemapDir)) {
+            $currentPerms = substr(sprintf('%o', fileperms($this->sitemapDir)), -4);
+            throw new \Exception(
+                "sitemap目录没有写入权限: {$this->sitemapDir}\n" .
+                "当前权限: {$currentPerms}\n" .
+                "建议执行: chmod 755 {$this->sitemapDir}\n" .
+                "或者: chown www-data:www-data {$this->sitemapDir} (根据您的Web服务器用户调整)"
+            );
         }
     }
 
@@ -102,7 +129,9 @@ class EnhancedSitemapGenerator
 
         // 保存文件
         $filename = $this->sitemapDir . 'sitemap.xml';
-        $xml->asXML($filename);
+        if (!$this->saveXmlFile($xml, $filename)) {
+            throw new \Exception("无法保存文件: {$filename}，请检查目录权限");
+        }
 
         return [
             'success' => true,
@@ -146,7 +175,9 @@ class EnhancedSitemapGenerator
         }
 
         $filename = $this->sitemapDir . 'sitemap-images.xml';
-        $xml->asXML($filename);
+        if (!$this->saveXmlFile($xml, $filename)) {
+            throw new \Exception("无法保存文件: {$filename}，请检查目录权限");
+        }
 
         return [
             'success' => true,
@@ -190,7 +221,9 @@ class EnhancedSitemapGenerator
         }
 
         $filename = $this->sitemapDir . 'sitemap-news.xml';
-        $xml->asXML($filename);
+        if (!$this->saveXmlFile($xml, $filename)) {
+            throw new \Exception("无法保存文件: {$filename}，请检查目录权限");
+        }
 
         return [
             'success' => true,
@@ -222,7 +255,9 @@ class EnhancedSitemapGenerator
         }
 
         $filename = $this->sitemapDir . 'sitemap-index.xml';
-        $xml->asXML($filename);
+        if (!$this->saveXmlFile($xml, $filename)) {
+            throw new \Exception("无法保存文件: {$filename}，请检查目录权限");
+        }
 
         return [
             'success' => true,
@@ -265,7 +300,9 @@ class EnhancedSitemapGenerator
         }
 
         $filename = $this->sitemapDir . 'sitemap-' . $lang . '.xml';
-        $xml->asXML($filename);
+        if (!$this->saveXmlFile($xml, $filename)) {
+            throw new \Exception("无法保存文件: {$filename}，请检查目录权限");
+        }
 
         return [
             'success' => true,
@@ -342,6 +379,47 @@ class EnhancedSitemapGenerator
         }
 
         return $this->baseUrl . '/' . $url;
+    }
+
+    /**
+     * 安全保存XML文件
+     * @param \SimpleXMLElement $xml
+     * @param string $filename
+     * @return bool
+     */
+    private function saveXmlFile($xml, $filename)
+    {
+        try {
+            // 先保存到临时文件
+            $tempFile = $filename . '.tmp';
+            $xmlString = $xml->asXML();
+
+            if ($xmlString === false) {
+                return false;
+            }
+
+            // 写入临时文件
+            if (@file_put_contents($tempFile, $xmlString) === false) {
+                return false;
+            }
+
+            // 原子性重命名
+            if (!@rename($tempFile, $filename)) {
+                @unlink($tempFile);
+                return false;
+            }
+
+            // 设置文件权限
+            @chmod($filename, 0644);
+
+            return true;
+        } catch (\Exception $e) {
+            // 清理临时文件
+            if (isset($tempFile) && file_exists($tempFile)) {
+                @unlink($tempFile);
+            }
+            return false;
+        }
     }
 
     /**
@@ -464,7 +542,9 @@ class EnhancedSitemapGenerator
 
             // 保存到文件
             $filename = $this->sitemapDir . 'sitemap.txt';
-            file_put_contents($filename, $content);
+            if (@file_put_contents($filename, $content) === false) {
+                throw new \Exception("无法保存文件: {$filename}，请检查目录权限");
+            }
 
             return [
                 'success' => true,
@@ -553,7 +633,9 @@ class EnhancedSitemapGenerator
 
             // 保存到文件
             $filename = $this->sitemapDir . 'sitemap.html';
-            file_put_contents($filename, $html);
+            if (@file_put_contents($filename, $html) === false) {
+                throw new \Exception("无法保存文件: {$filename}，请检查目录权限");
+            }
 
             return [
                 'success' => true,

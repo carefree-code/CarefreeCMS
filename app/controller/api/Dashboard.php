@@ -37,6 +37,9 @@ class Dashboard extends BaseController
                 // 今日统计
                 'today_articles' => Article::whereTime('create_time', 'today')->count(),
                 'today_views' => Article::whereTime('create_time', 'today')->sum('view_count'),
+
+                // 系统运行时长（基于安装时间）
+                'system_uptime' => $this->getSystemUptime(),
             ];
 
             return Response::success($stats);
@@ -93,10 +96,10 @@ class Dashboard extends BaseController
     {
         try {
             $info = [
-                'system_name' => '欢喜内容管理系统',
-                'system_version' => '1.0.0',
-                'system_author' => 'HuanXi Team',
-                'system_copyright' => '© 2025 HuanXi CMS. All rights reserved.',
+                'system_name' => '逍遥内容管理系统',
+                'system_version' => '1.2.0',
+                'system_author' => 'CareFree Team',
+                'system_copyright' => '© 2025 CareFree CMS. All rights reserved.',
                 'system_license' => 'MIT License',
                 'thinkphp_version' => app()->version(),
             ];
@@ -132,5 +135,37 @@ class Dashboard extends BaseController
         $bytes /= pow(1024, $pow);
 
         return round($bytes, $precision) . ' ' . $units[$pow];
+    }
+
+    /**
+     * 获取系统运行时长
+     */
+    private function getSystemUptime()
+    {
+        try {
+            // 获取第一篇文章或第一个管理员的创建时间作为系统安装时间
+            $installTime = AdminUser::order('id', 'asc')->value('create_time');
+
+            if (!$installTime) {
+                return '未知';
+            }
+
+            $installTimestamp = is_numeric($installTime) ? $installTime : strtotime($installTime);
+            $diff = time() - $installTimestamp;
+
+            $days = floor($diff / 86400);
+            $hours = floor(($diff % 86400) / 3600);
+            $minutes = floor(($diff % 3600) / 60);
+
+            if ($days > 0) {
+                return "{$days}天{$hours}小时";
+            } elseif ($hours > 0) {
+                return "{$hours}小时{$minutes}分钟";
+            } else {
+                return "{$minutes}分钟";
+            }
+        } catch (\Exception $e) {
+            return '未知';
+        }
     }
 }

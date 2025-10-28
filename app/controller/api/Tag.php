@@ -4,8 +4,10 @@ namespace app\controller\api;
 
 use app\BaseController;
 use app\common\Response;
+use app\common\Logger;
 use app\model\Tag as TagModel;
 use app\model\ArticleTag;
+use app\model\OperationLog;
 use think\Request;
 
 /**
@@ -93,8 +95,10 @@ class Tag extends BaseController
 
         try {
             $tag = TagModel::create($data);
+            Logger::create(OperationLog::MODULE_TAG, '标签', $tag->id);
             return Response::success(['id' => $tag->id], '标签创建成功');
         } catch (\Exception $e) {
+            Logger::log(OperationLog::MODULE_TAG, OperationLog::ACTION_CREATE, '创建标签失败', false, $e->getMessage());
             return Response::error('标签创建失败：' . $e->getMessage());
         }
     }
@@ -123,8 +127,10 @@ class Tag extends BaseController
 
         try {
             $tag->save($data);
+            Logger::update(OperationLog::MODULE_TAG, '标签', $id);
             return Response::success([], '标签更新成功');
         } catch (\Exception $e) {
+            Logger::log(OperationLog::MODULE_TAG, OperationLog::ACTION_UPDATE, "更新标签失败 (ID: {$id})", false, $e->getMessage());
             return Response::error('标签更新失败：' . $e->getMessage());
         }
     }
@@ -146,9 +152,12 @@ class Tag extends BaseController
         }
 
         try {
+            $tagName = $tag->name;
             $tag->delete();
+            Logger::delete(OperationLog::MODULE_TAG, "标签[{$tagName}]", $id);
             return Response::success([], '标签删除成功');
         } catch (\Exception $e) {
+            Logger::log(OperationLog::MODULE_TAG, OperationLog::ACTION_DELETE, "删除标签失败 (ID: {$id})", false, $e->getMessage());
             return Response::error('标签删除失败：' . $e->getMessage());
         }
     }

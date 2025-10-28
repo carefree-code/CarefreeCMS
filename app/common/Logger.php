@@ -200,4 +200,83 @@ class Logger
             "修改个人密码"
         );
     }
+
+    /**
+     * 记录批量删除操作
+     */
+    public static function batchDelete(string $module, string $itemName, array $ids): bool
+    {
+        return self::log(
+            $module,
+            OperationLog::ACTION_DELETE,
+            "批量删除{$itemName}，数量: " . count($ids) . "，ID: " . implode(',', $ids)
+        );
+    }
+
+    /**
+     * 记录批量操作失败
+     */
+    public static function batchOperationFailed(string $module, string $action, string $itemName, int $count, string $errorMsg = ''): bool
+    {
+        return self::log(
+            $module,
+            $action,
+            "批量操作{$itemName}失败，影响数量: {$count}",
+            false,
+            $errorMsg
+        );
+    }
+
+    /**
+     * 记录导出操作
+     */
+    public static function export(string $module, string $exportType, int $count = 0): bool
+    {
+        return self::log(
+            $module,
+            'export',
+            "导出{$exportType}" . ($count > 0 ? "，数量: {$count}" : '')
+        );
+    }
+
+    /**
+     * 记录导入操作
+     */
+    public static function import(string $module, string $importType, int $successCount, int $failCount = 0): bool
+    {
+        $description = "导入{$importType}，成功: {$successCount}";
+        if ($failCount > 0) {
+            $description .= "，失败: {$failCount}";
+        }
+        return self::log(
+            $module,
+            'import',
+            $description,
+            $failCount === 0
+        );
+    }
+
+    /**
+     * 记录缓存清理操作
+     */
+    public static function clearCache(string $cacheType = '全部'): bool
+    {
+        return self::log(
+            OperationLog::MODULE_CONFIG,
+            'clear_cache',
+            "清理{$cacheType}缓存"
+        );
+    }
+
+    /**
+     * 记录配置更新操作
+     */
+    public static function updateConfig(string $configName): bool
+    {
+        return self::log(
+            OperationLog::MODULE_CONFIG,
+            OperationLog::ACTION_UPDATE,
+            "更新配置: {$configName}"
+        );
+    }
 }

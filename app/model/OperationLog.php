@@ -40,6 +40,9 @@ class OperationLog extends Model
     const ACTION_BUILD = 'build';            // 生成
     const ACTION_RESET_PASSWORD = 'reset_password'; // 重置密码
     const ACTION_CHANGE_PASSWORD = 'change_password'; // 修改密码
+    const ACTION_EXPORT = 'export';          // 导出
+    const ACTION_IMPORT = 'import';          // 导入
+    const ACTION_CLEAR_CACHE = 'clear_cache'; // 清理缓存
 
     /**
      * 记录操作日志
@@ -95,6 +98,9 @@ class OperationLog extends Model
             self::ACTION_BUILD => '生成',
             self::ACTION_RESET_PASSWORD => '重置密码',
             self::ACTION_CHANGE_PASSWORD => '修改密码',
+            self::ACTION_EXPORT => '导出',
+            self::ACTION_IMPORT => '导入',
+            self::ACTION_CLEAR_CACHE => '清理缓存',
         ];
     }
 }

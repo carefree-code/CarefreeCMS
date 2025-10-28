@@ -9,8 +9,10 @@ use app\model\Article;
 use app\model\Category;
 use app\model\Page;
 use app\model\Tag;
+use app\model\Topic;
 use app\model\StaticBuildLog;
 use app\model\Config;
+use app\service\TemplateAssetManager;
 use think\facade\View;
 use think\facade\Db;
 
@@ -297,11 +299,23 @@ class Build extends BaseController
                 ->field('id,title')
                 ->find();
 
+            // 获取相关文章（同分类的其他文章）
+            $relatedArticles = Article::where('category_id', $article->category_id)
+                ->where('id', '<>', $id)
+                ->where('status', 1)
+                ->order('view_count', 'desc')
+                ->limit(3)
+                ->field('id,title,cover_image,create_time')
+                ->select()
+                ->toArray();
+
             $templatePath = $this->getTemplatePath('article');
             $templateData = [
                 'article' => $article->toArray(),
                 'prev' => $prev ? $prev->toArray() : null,
                 'next' => $next ? $next->toArray() : null,
+                'related_articles' => $relatedArticles,
+                'comment_count' => 0,  // 评论功能暂未实现
                 'config' => $this->config,
                 'is_home' => false,
                 'title' => $article->title,
@@ -369,7 +383,7 @@ class Build extends BaseController
             }
 
             // 获取该分类下的文章
-            $articles = Article::with(['user'])
+            $articles = Article::with(['user', 'tags'])
                 ->where('category_id', $id)
                 ->where('status', 1)  // 1 = 已发布
                 ->order('create_time', 'desc')
@@ -379,6 +393,12 @@ class Build extends BaseController
             // 获取侧边栏数据
             $categories = Category::select()->toArray();
             $tags = Tag::where('status', 1)->limit(20)->select()->toArray();
+            $hotArticles = Article::where('status', 1)
+                ->order('view_count', 'desc')
+                ->limit(5)
+                ->field('id,title,view_count')
+                ->select()
+                ->toArray();
 
             // 获取分类自定义模板，默认使用 category
             $template = $category->template ?? 'category';
@@ -393,7 +413,8 @@ class Build extends BaseController
                 'keywords' => $category->name,
                 'description' => $category->description ?? $category->name,
                 'categories' => $categories,
-                'tags' => $tags
+                'tags' => $tags,
+                'hot_articles' => $hotArticles
             ]);
 
             // 保存文件
@@ -451,7 +472,7 @@ class Build extends BaseController
 
             // 获取该标签下的文章
             $articles = $tag->articles()
-                ->with(['user', 'category'])
+                ->with(['user', 'category', 'tags'])
                 ->where('status', 1)  // 1 = 已发布
                 ->order('create_time', 'desc')
                 ->select()
@@ -462,6 +483,12 @@ class Build extends BaseController
             // 获取侧边栏数据
             $categories = Category::select()->toArray();
             $tags = Tag::where('status', 1)->limit(20)->select()->toArray();
+            $hotArticles = Article::where('status', 1)
+                ->order('view_count', 'desc')
+                ->limit(5)
+                ->field('id,title,view_count')
+                ->select()
+                ->toArray();
 
             $templatePath = $this->getTemplatePath('tag');
             $templateData = [
@@ -473,7 +500,8 @@ class Build extends BaseController
                 'keywords' => $tag->name,
                 'description' => $tag->description ?? $tag->name,
                 'categories' => $categories,
-                'tags' => $tags
+                'tags' => $tags,
+                'hot_articles' => $hotArticles
             ];
 
             trace('模板路径: ' . $templatePath, 'info');
@@ -556,6 +584,165 @@ class Build extends BaseController
                 StaticBuildLog::STATUS_FAILED,
                 $e->getMessage()
             );
+            return Response::error('生成失败：' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 生成所有分类页
+     */
+    public function categories()
+    {
+        try {
+            $result = [
+                'categories' => 0,
+                'failed' => 0
+            ];
+
+            // 获取所有分类
+            $categories = Category::select();
+
+            foreach ($categories as $category) {
+                try {
+                    $this->category($category->id);
+                    $result['categories']++;
+                } catch (\Exception $e) {
+                    $result['failed']++;
+                }
+            }
+
+            return Response::success($result, '分类页生成完成');
+        } catch (\Exception $e) {
+            return Response::error('生成失败：' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 生成单个专题页
+     */
+    public function topic($id = null)
+    {
+        // 优先使用传入的ID，否则从请求中获取
+        $id = $id ?? (int)$this->request->param('id', 0);
+
+        if (!$id) {
+            return Response::error('缺少专题ID');
+        }
+
+        try {
+            // 获取专题详情
+            $topic = Topic::where('id', $id)
+                ->where('status', 1)  // 1 = 已发布
+                ->find();
+
+            if (!$topic) {
+                return Response::error('专题不存在或未发布');
+            }
+
+            // 获取专题下的文章（分页）
+            $pageSize = 10;
+            $page = 1;
+
+            // 获取专题文章关联
+            $articleIds = Db::name('topic_articles')
+                ->where('topic_id', $id)
+                ->order('sort', 'asc')
+                ->column('article_id');
+
+            if (!empty($articleIds)) {
+                $articles = Article::where('status', 1)
+                    ->whereIn('id', $articleIds)
+                    ->with(['category', 'user', 'tags'])
+                    ->select();
+            } else {
+                $articles = [];
+            }
+
+            // 获取其他推荐专题
+            $topics = Topic::where('status', 1)
+                ->where('is_recommended', 1)
+                ->where('id', '<>', $id)
+                ->limit(10)
+                ->select();
+
+            // 获取分类和标签（侧边栏）
+            $categories = Category::limit(10)->select()->toArray();
+            $tags = Tag::where('status', 1)->limit(20)->select()->toArray();
+            $hotArticles = Article::where('status', 1)
+                ->order('view_count', 'desc')
+                ->limit(5)
+                ->field('id,title,view_count')
+                ->select()
+                ->toArray();
+
+            // 获取专题自定义模板，默认使用 topic
+            $template = $topic->template ?? 'topic';
+
+            // 渲染模板
+            $content = View::fetch($this->getTemplatePath($template), [
+                'topic' => $topic->toArray(),
+                'articles' => $articles,
+                'topics' => $topics,
+                'categories' => $categories,
+                'tags' => $tags,
+                'hot_articles' => $hotArticles,
+                'config' => $this->config,
+                'is_home' => false,
+                'title' => $topic->seo_title ?: $topic->name,
+                'keywords' => $topic->seo_keywords ?? '',
+                'description' => $topic->seo_description ?: $topic->description
+            ]);
+
+            // 保存文件 - 使用 topic-{id}.html 格式
+            $filePath = $this->outputPath . 'topic-' . $topic->id . '.html';
+            file_put_contents($filePath, $content);
+
+            // 记录日志
+            StaticBuildLog::log(
+                StaticBuildLog::BUILD_TYPE_MANUAL,
+                'topic',
+                (int)$id,
+                StaticBuildLog::STATUS_SUCCESS
+            );
+
+            return Response::success([], '专题页生成成功');
+        } catch (\Exception $e) {
+            StaticBuildLog::log(
+                StaticBuildLog::BUILD_TYPE_MANUAL,
+                'topic',
+                (int)$id,
+                StaticBuildLog::STATUS_FAILED,
+                $e->getMessage()
+            );
+            return Response::error('生成失败：' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 生成所有专题页
+     */
+    public function topics()
+    {
+        try {
+            $result = [
+                'topics' => 0,
+                'failed' => 0
+            ];
+
+            // 获取所有已发布的专题
+            $topics = Topic::where('status', 1)->select();  // 1 = 已发布
+
+            foreach ($topics as $topic) {
+                try {
+                    $this->topic($topic->id);
+                    $result['topics']++;
+                } catch (\Exception $e) {
+                    $result['failed']++;
+                }
+            }
+
+            return Response::success($result, "专题页生成完成，共生成{$result['topics']}个页面");
+        } catch (\Exception $e) {
             return Response::error('生成失败：' . $e->getMessage());
         }
     }
@@ -676,6 +863,7 @@ class Build extends BaseController
                 'articles' => 0,
                 'categories' => 0,
                 'tags' => 0,
+                'topics' => 0,
                 'pages' => 0,
                 'failed' => 0
             ];
@@ -723,6 +911,17 @@ class Build extends BaseController
                 }
             }
 
+            // 生成所有专题页
+            $topics = Topic::where('status', 1)->select();  // 1 = 已发布
+            foreach ($topics as $topic) {
+                try {
+                    $this->topic($topic->id);
+                    $result['topics']++;
+                } catch (\Exception $e) {
+                    $result['failed']++;
+                }
+            }
+
             // 生成所有已发布的单页面
             $pages = Page::where('status', 1)->select();  // 1 = 已发布
             foreach ($pages as $page) {
@@ -732,6 +931,16 @@ class Build extends BaseController
                 } catch (\Exception $e) {
                     $result['failed']++;
                 }
+            }
+
+            // 同步模板资源文件（CSS、JS、图片等）
+            try {
+                $assetManager = new TemplateAssetManager($this->currentTheme, $this->outputPath);
+                $assetResult = $assetManager->syncAllAssets();
+                $result['assets_synced'] = $assetResult['success'] ? $assetResult['total_files'] : 0;
+            } catch (\Exception $e) {
+                $result['assets_synced'] = 0;
+                $result['assets_error'] = $e->getMessage();
             }
 
             return Response::success($result, '批量生成完成');
@@ -805,6 +1014,65 @@ class Build extends BaseController
             return Response::success(['count' => $count], "成功清空{$count}条日志");
         } catch (\Exception $e) {
             return Response::error('清空失败：' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 同步模板资源文件到静态目录
+     * 将模板套装的 assets 目录（CSS、JS、图片等）复制到静态输出目录
+     */
+    public function syncAssets()
+    {
+        try {
+            $assetManager = new TemplateAssetManager($this->currentTheme, $this->outputPath);
+            $result = $assetManager->syncAllAssets();
+
+            if ($result['success']) {
+                // 记录日志
+                $this->logBuildAction('资源同步', '全部资源', $result['total_files'] . '个文件', [
+                    'files' => $result['log']
+                ]);
+
+                return Response::success($result, '资源同步成功');
+            } else {
+                return Response::error($result['message']);
+            }
+        } catch (\Exception $e) {
+            return Response::error('资源同步失败：' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 清理静态目录中的旧资源文件
+     */
+    public function cleanAssets()
+    {
+        try {
+            $assetManager = new TemplateAssetManager($this->currentTheme, $this->outputPath);
+            $result = $assetManager->cleanOldAssets();
+
+            if ($result['success']) {
+                return Response::success($result, '资源清理成功');
+            } else {
+                return Response::error($result['message']);
+            }
+        } catch (\Exception $e) {
+            return Response::error('资源清理失败：' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 获取模板资源文件列表
+     */
+    public function getAssetsList()
+    {
+        try {
+            $assetManager = new TemplateAssetManager($this->currentTheme, $this->outputPath);
+            $assets = $assetManager->getAssetsList();
+
+            return Response::success($assets);
+        } catch (\Exception $e) {
+            return Response::error('获取资源列表失败：' . $e->getMessage());
         }
     }
 }

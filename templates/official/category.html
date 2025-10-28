@@ -34,16 +34,16 @@
                                     <span><i class="bi bi-person"></i> {$article.user.username ?: '管理员'}</span>
                                     <span><i class="bi bi-eye"></i> {$article.view_count ?: 0}</span>
                                 </div>
-                                <h3><a href="/article-{$article.id}.html">{$article.title}</a></h3>
+                                <h3><a href="/article/{$article.id}.html">{$article.title}</a></h3>
                                 <p class="article-summary">{$article.summary ?: mb_substr($article.content, 0, 150, 'utf-8')}...</p>
                                 {if condition="$article.tags"}
                                 <div class="article-tags">
                                     {volist name="article.tags" id="tag"}
-                                    <a href="/tag-{$tag.id}.html" class="article-tag">{$tag.name}</a>
+                                    <a href="/tag/{$tag.id}.html" class="article-tag">{$tag.name}</a>
                                     {/volist}
                                 </div>
                                 {/if}
-                                <a href="/article-{$article.id}.html" class="read-more">
+                                <a href="/article/{$article.id}.html" class="read-more">
                                     阅读全文 <i class="bi bi-arrow-right"></i>
                                 </a>
                             </div>
@@ -59,13 +59,6 @@
                 </div>
                 {/empty}
             </div>
-
-            <!-- 分页 -->
-            {notempty name="articles"}
-            <div class="pagination-wrapper" data-aos="fade-up">
-                {$articles|raw}
-            </div>
-            {/notempty}
         </div>
 
         <!-- 侧边栏 -->
@@ -86,7 +79,7 @@
                 <ul class="category-list">
                     {volist name="categories" id="cat"}
                     <li>
-                        <a href="/category-{$cat.id}.html" {if condition="$cat.id == $category.id"}class="text-primary"{/if}>
+                        <a href="/category/{$cat.id}.html" {if condition="$cat.id == $category.id"}class="text-primary"{/if}>
                             <span>{$cat.name}</span>
                             <span class="category-count">{$cat.article_count ?: 0}</span>
                         </a>
@@ -100,7 +93,7 @@
                 <h4>热门标签</h4>
                 <div class="tag-cloud">
                     {volist name="tags" id="tag"}
-                    <a href="/tag-{$tag.id}.html">{$tag.name}</a>
+                    <a href="/tag/{$tag.id}.html">{$tag.name}</a>
                     {/volist}
 
                     {empty name="tags"}

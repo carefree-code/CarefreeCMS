@@ -4,7 +4,9 @@ namespace app\controller\api;
 
 use app\BaseController;
 use app\common\Response;
+use app\common\Logger;
 use app\model\Category as CategoryModel;
+use app\model\OperationLog;
 use think\Request;
 
 /**
@@ -136,8 +138,16 @@ class Category extends BaseController
 
         try {
             $category = CategoryModel::create($data);
+            Logger::create(OperationLog::MODULE_CATEGORY, '分类', $category->id);
             return Response::success(['id' => $category->id], '分类创建成功');
         } catch (\Exception $e) {
+            Logger::log(
+                OperationLog::MODULE_CATEGORY,
+                OperationLog::ACTION_CREATE,
+                '创建分类失败',
+                false,
+                $e->getMessage()
+            );
             return Response::error('分类创建失败：' . $e->getMessage());
         }
     }
@@ -186,8 +196,16 @@ class Category extends BaseController
 
         try {
             $category->save($data);
+            Logger::update(OperationLog::MODULE_CATEGORY, '分类', $id);
             return Response::success([], '分类更新成功');
         } catch (\Exception $e) {
+            Logger::log(
+                OperationLog::MODULE_CATEGORY,
+                OperationLog::ACTION_UPDATE,
+                "更新分类失败 (ID: {$id})",
+                false,
+                $e->getMessage()
+            );
             return Response::error('分类更新失败：' . $e->getMessage());
         }
     }
@@ -215,9 +233,18 @@ class Category extends BaseController
         }
 
         try {
+            $categoryName = $category->name;
             $category->delete();
+            Logger::delete(OperationLog::MODULE_CATEGORY, "分类[{$categoryName}]", $id);
             return Response::success([], '分类删除成功');
         } catch (\Exception $e) {
+            Logger::log(
+                OperationLog::MODULE_CATEGORY,
+                OperationLog::ACTION_DELETE,
+                "删除分类失败 (ID: {$id})",
+                false,
+                $e->getMessage()
+            );
             return Response::error('分类删除失败：' . $e->getMessage());
         }
     }

@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
-  <rect fill="#667eea" width="400" height="200"/>
-  <g fill="#ffffff" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">
-    <text x="200" y="95">📝</text>
-    <text x="200" y="120" font-size="16">Article</text>
-  </g>
-</svg>
