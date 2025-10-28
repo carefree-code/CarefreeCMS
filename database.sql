@@ -322,3 +322,20 @@ INSERT INTO `categories` (`name`, `slug`, `description`, `sort`, `status`) VALUE
 INSERT INTO `pages` (`title`, `slug`, `content`, `template`, `sort`, `status`) VALUES
 ('关于我们', 'about', '<p>关于我们的内容...</p>', 'default', 1, 1),
 ('联系我们', 'contact', '<p>联系方式...</p>', 'default', 2, 1);
+
+CREATE TABLE `template_history` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `theme_key` varchar(100) NOT NULL COMMENT '模板套装key',
+  `file_path` varchar(255) NOT NULL COMMENT '文件路径',
+  `file_name` varchar(255) NOT NULL COMMENT '文件名',
+  `content` longtext NOT NULL COMMENT '文件内容',
+  `file_size` int NOT NULL DEFAULT '0' COMMENT '文件大小(字节)',
+  `version` int NOT NULL DEFAULT '1' COMMENT '版本号',
+  `change_description` varchar(500) DEFAULT NULL COMMENT '修改描述',
+  `user_id` int unsigned DEFAULT NULL COMMENT '操作用户ID',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_theme_file` (`theme_key`,`file_path`),
+  KEY `idx_create_time` (`create_time`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='模板历史记录表';
