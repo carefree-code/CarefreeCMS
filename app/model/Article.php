@@ -30,6 +30,10 @@ class Article extends Model
         'is_hot'        => 'integer',
         'sort'          => 'integer',
         'status'        => 'integer',
+        'is_contribute' => 'integer',
+        'audit_status'  => 'integer',
+        'audit_user_id' => 'integer',
+        'reward_points' => 'integer',
     ];
 
     /**
@@ -144,5 +148,128 @@ class Article extends Model
     {
         $status = [0 => '草稿', 1 => '已发布', 2 => '待审核', 3 => '已下线'];
         return $status[$data['status']] ?? '未知';
+    }
+
+    /**
+     * 关联前台用户（投稿作者）
+     */
+    public function frontUser()
+    {
+        return $this->belongsTo(FrontUser::class, 'user_id', 'id');
+    }
+
+    /**
+     * 关联审核管理员
+     */
+    public function auditor()
+    {
+        return $this->belongsTo(AdminUser::class, 'audit_user_id', 'id');
+    }
+
+    /**
+     * 获取器：审核状态文本
+     */
+    public function getAuditStatusTextAttr($value, $data)
+    {
+        if (!isset($data['audit_status'])) {
+            return '';
+        }
+
+        $status = [0 => '待审核', 1 => '已通过', 2 => '已拒绝'];
+        return $status[$data['audit_status']] ?? '未知';
+    }
+
+    /**
+     * 审核通过
+     *
+     * @param int $auditorId 审核人ID
+     * @param string $remark 审核备注
+     * @return bool
+     */
+    public function auditPass(int $auditorId, string $remark = ''): bool
+    {
+        if (!$this->is_contribute) {
+            throw new \Exception('非投稿文章');
+        }
+
+        if ($this->audit_status != 0) {
+            throw new \Exception('文章已审核');
+        }
+
+        \think\facade\Db::startTrans();
+
+        try {
+            // 更新文章状态
+            $this->audit_status = 1;
+            $this->audit_user_id = $auditorId;
+            $this->audit_time = date('Y-m-d H:i:s');
+            $this->audit_remark = $remark;
+            $this->status = 1; // 发布文章
+            $this->save();
+
+            // 奖励积分
+            $config = ContributeConfig::getByCategoryId($this->category_id);
+            $rewardPoints = $config ? $config->reward_points : 10;
+
+            if ($rewardPoints > 0) {
+                $user = FrontUser::find($this->user_id);
+                if ($user) {
+                    $user->addPoints($rewardPoints, 'contribute', "投稿通过奖励：{$this->title}", 'article', $this->id);
+                    $this->reward_points = $rewardPoints;
+                    $this->save();
+                }
+            }
+
+            // 发送通知
+            \app\service\NotificationService::sendArticleAuditNotification(
+                $this->user_id,
+                $this->title,
+                true,
+                $remark
+            );
+
+            \think\facade\Db::commit();
+
+            return true;
+
+        } catch (\Exception $e) {
+            \think\facade\Db::rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * 审核拒绝
+     *
+     * @param int $auditorId 审核人ID
+     * @param string $remark 拒绝原因
+     * @return bool
+     */
+    public function auditReject(int $auditorId, string $remark): bool
+    {
+        if (!$this->is_contribute) {
+            throw new \Exception('非投稿文章');
+        }
+
+        if ($this->audit_status != 0) {
+            throw new \Exception('文章已审核');
+        }
+
+        $this->audit_status = 2;
+        $this->audit_user_id = $auditorId;
+        $this->audit_time = date('Y-m-d H:i:s');
+        $this->audit_remark = $remark;
+        $this->status = 3; // 下线
+        $this->save();
+
+        // 发送通知
+        \app\service\NotificationService::sendArticleAuditNotification(
+            $this->user_id,
+            $this->title,
+            false,
+            $remark
+        );
+
+        return true;
     }
 }

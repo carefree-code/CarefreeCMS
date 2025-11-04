@@ -300,7 +300,28 @@ class CacheController extends BaseController
             return $this->error('写入.env文件失败');
         }
 
-        // 清空所有缓存
+        // 清除运行时配置缓存文件，确保新配置生效
+        $runtimePath = app()->getRuntimePath();
+        $configCacheFile = $runtimePath . 'config.php';
+        if (file_exists($configCacheFile)) {
+            @unlink($configCacheFile);
+        }
+
+        // 清除temp目录下的缓存文件
+        $tempDir = $runtimePath . 'temp/';
+        if (is_dir($tempDir)) {
+            $files = scandir($tempDir);
+            foreach ($files as $file) {
+                if ($file !== '.' && $file !== '..') {
+                    $filePath = $tempDir . $file;
+                    if (is_file($filePath)) {
+                        @unlink($filePath);
+                    }
+                }
+            }
+        }
+
+        // 清空所有数据缓存
         $service = new CacheManager();
         $service->clearAll();
 

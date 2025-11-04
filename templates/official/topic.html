@@ -84,35 +84,24 @@
             <div class="pagination-wrapper" data-aos="fade-up">
                 <nav aria-label="专题文章分页">
                     <ul class="pagination justify-content-center">
+                        <!-- 上一页 -->
                         {if condition="$pagination.current_page > 1"}
                         <li class="page-item">
-                            {php}
-                            $prevPage = $pagination['current_page'] - 1;
-                            $prevUrl = $prevPage === 1 ? '/topic-' . $topic['id'] . '.html' : '/topic-' . $topic['id'] . '-' . $prevPage . '.html';
-                            {/php}
-                            <a class="page-link" href="{$prevUrl}">上一页</a>
+                            <a class="page-link" href="{$pagination.current_page == 2 ? '/topic-' . $topic.id . '.html' : '/topic-' . $topic.id . '-' . ($pagination.current_page - 1) . '.html'}">上一页</a>
                         </li>
                         {/if}
 
-                        {php}
-                        $totalPages = $pagination['total_pages'];
-                        $currentPage = $pagination['current_page'];
-                        for ($i = 1; $i <= $totalPages; $i++) {
-                            $pageUrl = $i === 1 ? '/topic-' . $topic['id'] . '.html' : '/topic-' . $topic['id'] . '-' . $i . '.html';
-                            $activeClass = $i === $currentPage ? 'active' : '';
-                            echo '<li class="page-item ' . $activeClass . '">';
-                            echo '<a class="page-link" href="' . $pageUrl . '">' . $i . '</a>';
-                            echo '</li>';
-                        }
-                        {/php}
+                        <!-- 页码列表 -->
+                        {for start="1" end="$pagination.total_pages" name="i"}
+                        <li class="page-item {$i == $pagination.current_page ? 'active' : ''}">
+                            <a class="page-link" href="{$i == 1 ? '/topic-' . $topic.id . '.html' : '/topic-' . $topic.id . '-' . $i . '.html'}">{$i}</a>
+                        </li>
+                        {/for}
 
+                        <!-- 下一页 -->
                         {if condition="$pagination.current_page < $pagination.total_pages"}
                         <li class="page-item">
-                            {php}
-                            $nextPage = $pagination['current_page'] + 1;
-                            $nextUrl = '/topic-' . $topic['id'] . '-' . $nextPage . '.html';
-                            {/php}
-                            <a class="page-link" href="{$nextUrl}">下一页</a>
+                            <a class="page-link" href="/topic-{$topic.id}-{$pagination.current_page + 1}.html">下一页</a>
                         </li>
                         {/if}
                     </ul>
@@ -124,57 +113,43 @@
 
         <!-- 侧边栏 -->
         <div class="col-lg-4">
-            <!-- 其他专题 -->
-            <div class="sidebar-card" data-aos="fade-up">
-                <h4>推荐专题</h4>
-                <ul class="category-list">
-                    {volist name="topics" id="t"}
-                    <li>
-                        <a href="/topic-{$t.id}.html" {if condition="$t.id == $topic.id"}class="text-primary"{/if}>
-                            <span>{$t.name}</span>
-                            <span class="category-count">{$t.article_count ?: 0}</span>
-                        </a>
-                    </li>
-                    {/volist}
-
-                    {empty name="topics"}
-                    <li class="text-secondary">暂无专题</li>
-                    {/empty}
-                </ul>
-            </div>
-
-            <!-- 分类 -->
-            <div class="sidebar-card" data-aos="fade-up" data-aos-delay="100">
-                <h4>文章分类</h4>
-                <ul class="category-list">
-                    {volist name="categories" id="category"}
-                    <li>
-                        <a href="/category-{$category.id}.html">
-                            <span>{$category.name}</span>
-                            <span class="category-count">{$category.article_count ?: 0}</span>
-                        </a>
-                    </li>
-                    {/volist}
-
-                    {empty name="categories"}
-                    <li class="text-secondary">暂无分类</li>
-                    {/empty}
-                </ul>
-            </div>
-
-            <!-- 热门标签 -->
-            <div class="sidebar-card" data-aos="fade-up" data-aos-delay="200">
-                <h4>热门标签</h4>
-                <div class="tag-cloud">
-                    {volist name="tags" id="tag"}
-                    <a href="/tag-{$tag.id}.html">{$tag.name}</a>
-                    {/volist}
-
-                    {empty name="tags"}
-                    <p class="text-secondary mb-0">暂无标签</p>
-                    {/empty}
+            <!-- 专题信息 -->
+            <div class="sidebar-widget" data-aos="fade-up">
+                <div class="widget-header">
+                    <h3><i class="bi bi-bookmark-star-fill"></i> 专题信息</h3>
+                </div>
+                <div class="category-info">
+                    <p class="text-secondary">{$topic.description ?: '暂无描述'}</p>
+                    <div class="info-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">文章数</span>
+                            <span class="stat-value">{$topic.article_count ?: 0}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">浏览量</span>
+                            <span class="stat-value">{$topic.view_count ?: 0}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            <!-- 其他专题 -->
+            <div class="sidebar-widget" data-aos="fade-up" data-aos-delay="100">
+                <div class="widget-header">
+                    <h3><i class="bi bi-collection"></i> 推荐专题</h3>
+                </div>
+                {carefree:topic limit='8' order='sort desc,create_time desc' id='t' empty='<div class="empty-state"><p>暂无专题</p></div>'}
+                <div class="category-list">
+                    <a href="/topic-{$t.id}.html" class="category-item {if condition="$t.id == $topic.id"}active{/if}">
+                        <i class="bi bi-bookmark-star"></i> {$t.name}
+                        <span class="category-count">({$t.article_count ?: 0})</span>
+                    </a>
+                </div>
+                {/carefree:topic}
+            </div>
+
+            <!-- 引入公共侧边栏 -->
+            {include file="sidebar" /}
         </div>
     </div>
 </div>

@@ -87,34 +87,87 @@
                 {/if}
             </article>
 
+            <!-- 上下篇导航 -->
+            {carefree:prevnext aid='$article.id' catid='$article.category_id' type='same'}
+            <div class="article-navigation" data-aos="fade-up">
+                <div class="row g-3">
+                    {if condition="$prev"}
+                    <div class="col-md-6">
+                        <a href="/article/{$prev.id}.html" class="nav-card prev-article">
+                            <span class="nav-label"><i class="bi bi-arrow-left"></i> 上一篇</span>
+                            <span class="nav-title">{$prev.title}</span>
+                        </a>
+                    </div>
+                    {else /}
+                    <div class="col-md-6">
+                        <div class="nav-card nav-disabled">
+                            <span class="nav-label"><i class="bi bi-arrow-left"></i> 上一篇</span>
+                            <span class="nav-title text-muted">没有了</span>
+                        </div>
+                    </div>
+                    {/if}
+
+                    {if condition="$next"}
+                    <div class="col-md-6">
+                        <a href="/article/{$next.id}.html" class="nav-card next-article">
+                            <span class="nav-label">下一篇 <i class="bi bi-arrow-right"></i></span>
+                            <span class="nav-title">{$next.title}</span>
+                        </a>
+                    </div>
+                    {else /}
+                    <div class="col-md-6">
+                        <div class="nav-card nav-disabled">
+                            <span class="nav-label">下一篇 <i class="bi bi-arrow-right"></i></span>
+                            <span class="nav-title text-muted">没有了</span>
+                        </div>
+                    </div>
+                    {/if}
+                </div>
+            </div>
+            {/carefree:prevnext}
+
             <!-- 相关文章 -->
-            {if condition="$related_articles && count($related_articles) > 0"}
+            {carefree:related aid='$article.id' limit='3' type='tag' id='related' empty=''}
             <div class="related-articles" data-aos="fade-up">
                 <h3>相关文章</h3>
                 <div class="row g-4">
-                    {volist name="related_articles" id="related" offset="0" length="3"}
                     <div class="col-md-4">
                         <div class="related-card">
                             <img src="{$related.cover_image ?: '/assets/images/placeholder/article-small.svg'}" alt="{$related.title}" class="related-image">
                             <div class="related-content">
-                                <h5><a href="/article-{$related.id}.html">{$related.title}</a></h5>
+                                <h5><a href="/article/{$related.id}.html">{$related.title}</a></h5>
                                 <p class="related-meta">
                                     <i class="bi bi-calendar"></i> {$related.create_time|date='Y-m-d'}
                                 </p>
                             </div>
                         </div>
                     </div>
-                    {/volist}
                 </div>
             </div>
-            {/if}
+            {/carefree:related}
 
             <!-- 评论区 -->
-            <div id="comments" class="comments-section" data-aos="fade-up">
-                <h3>评论 ({$comment_count ?: 0})</h3>
-                <div class="text-center text-secondary py-4">
-                    <i class="bi bi-chat-dots" style="font-size: 3rem; opacity: 0.3;"></i>
-                    <p class="mt-2">暂无评论，来抢沙发吧！</p>
+            <div id="comments" class="comments-section" data-aos="fade-up" data-article-id="{$article.id}">
+                <h3>
+                    <i class="bi bi-chat-left-text me-2"></i>
+                    评论 (<span id="commentCount">0</span>)
+                </h3>
+
+                <!-- 发表评论表单 -->
+                <div class="comment-form">
+                    <textarea class="form-control" id="commentContent" rows="4" placeholder="写下你的评论..."></textarea>
+                    <button class="btn btn-primary mt-3" id="submitCommentBtn">
+                        <i class="bi bi-send me-2"></i>发表评论
+                    </button>
+                </div>
+
+                <!-- 评论列表 -->
+                <div id="commentsList">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,14 +176,7 @@
 {/block}
 
 {block name="script"}
-<script>
-    // 复制链接
-    document.querySelector('.share-btn.link').addEventListener('click', function(e) {
-        e.preventDefault();
-        const url = window.location.href;
-        navigator.clipboard.writeText(url).then(function() {
-            alert('链接已复制到剪贴板！');
-        });
-    });
-</script>
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/comment.js"></script>
+<script src="/assets/js/article.js"></script>
 {/block}

@@ -21,7 +21,7 @@
         <!-- 文章列表 -->
         <div class="col-lg-8">
             <div class="article-list">
-                {volist name="articles" id="article"}
+                {carefree:article tagid='$tag.id' limit='10' order='create_time desc' id='article' empty='<div class="text-center py-5" data-aos="fade-up"><i class="bi bi-inbox" style="font-size: 4rem; color: #cbd5e1;"></i><p class="mt-3 text-secondary">该标签下暂无文章</p></div>'}
                 <article class="article-card" data-aos="fade-up">
                     <div class="row g-0">
                         <div class="col-md-5">
@@ -31,18 +31,18 @@
                             <div class="article-content">
                                 <div class="article-meta">
                                     <span><i class="bi bi-calendar"></i> {$article.create_time|date='Y-m-d'}</span>
-                                    <span><i class="bi bi-person"></i> {$article.user.username ?: '管理员'}</span>
+                                    <span><i class="bi bi-person"></i> {$article.author_name ?: '管理员'}</span>
                                     <span><i class="bi bi-eye"></i> {$article.view_count ?: 0}</span>
                                 </div>
                                 <h3><a href="/article/{$article.id}.html">{$article.title}</a></h3>
-                                <p class="article-summary">{$article.summary ?: mb_substr($article.content, 0, 150, 'utf-8')}...</p>
-                                {if condition="$article.tags"}
+                                <p class="article-summary">{$article.summary ?: $article.content_preview}...</p>
+                                {notempty name="article.tags"}
                                 <div class="article-tags">
-                                    {volist name="article.tags" id="t"}
-                                    <a href="/tag/{$t.id}.html" class="article-tag">{$t.name}</a>
+                                    {volist name="article.tags" id="tag"}
+                                    <a href="/tag-{$tag.id}.html" class="article-tag">{$tag.name}</a>
                                     {/volist}
                                 </div>
-                                {/if}
+                                {/notempty}
                                 <a href="/article/{$article.id}.html" class="read-more">
                                     阅读全文 <i class="bi bi-arrow-right"></i>
                                 </a>
@@ -50,63 +50,44 @@
                         </div>
                     </div>
                 </article>
-                {/volist}
-
-                {empty name="articles"}
-                <div class="text-center py-5" data-aos="fade-up">
-                    <i class="bi bi-inbox" style="font-size: 4rem; color: #cbd5e1;"></i>
-                    <p class="mt-3 text-secondary">该标签下暂无文章</p>
-                </div>
-                {/empty}
+                {/carefree:article}
             </div>
         </div>
 
         <!-- 侧边栏 -->
         <div class="col-lg-4">
             <!-- 标签信息 -->
-            <div class="sidebar-card" data-aos="fade-up">
-                <h4>标签信息</h4>
-                <p class="text-secondary">{$tag.description ?: '暂无描述'}</p>
-                <div class="mt-3">
-                    <span class="text-secondary">文章数：</span>
-                    <strong>{$tag.article_count ?: 0}</strong>
+            <div class="sidebar-widget" data-aos="fade-up">
+                <div class="widget-header">
+                    <h3><i class="bi bi-tag-fill"></i> 标签信息</h3>
                 </div>
-            </div>
-
-            <!-- 分类 -->
-            <div class="sidebar-card" data-aos="fade-up" data-aos-delay="100">
-                <h4>文章分类</h4>
-                <ul class="category-list">
-                    {volist name="categories" id="category"}
-                    <li>
-                        <a href="/category/{$category.id}.html">
-                            <span>{$category.name}</span>
-                            <span class="category-count">{$category.article_count ?: 0}</span>
-                        </a>
-                    </li>
-                    {/volist}
-
-                    {empty name="categories"}
-                    <li class="text-secondary">暂无分类</li>
-                    {/empty}
-                </ul>
+                <div class="category-info">
+                    <p class="text-secondary">{$tag.description ?: '暂无描述'}</p>
+                    <div class="info-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">文章数</span>
+                            <span class="stat-value">{$tag.article_count ?: 0}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- 相关标签 -->
-            <div class="sidebar-card" data-aos="fade-up" data-aos-delay="200">
-                <h4>相关标签</h4>
+            <div class="sidebar-widget" data-aos="fade-up" data-aos-delay="100">
+                <div class="widget-header">
+                    <h3><i class="bi bi-tags"></i> 相关标签</h3>
+                </div>
                 <div class="tag-cloud">
-                    {volist name="tags" id="t"}
-                    <a href="/tag/{$t.id}.html" {if condition="$t.id == $tag.id"}style="background: #667eea; color: #fff;"{/if}>
+                    {carefree:tag limit='20' order='article_count desc' id='t' empty='<div class="empty-state"><p>暂无标签</p></div>'}
+                    <a href="/tag-{$t.id}.html" class="tag-item {if condition="$t.id == $tag.id"}tag-level-5{else /}tag-level-3{/if}" title="{$t.name} ({$t.article_count ?: 0}篇)">
                         {$t.name}
                     </a>
-                    {/volist}
-
-                    {empty name="tags"}
-                    <p class="text-secondary mb-0">暂无标签</p>
-                    {/empty}
+                    {/carefree:tag}
                 </div>
             </div>
+
+            <!-- 引入公共侧边栏 -->
+            {include file="sidebar" /}
         </div>
     </div>
 </div>

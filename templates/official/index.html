@@ -6,35 +6,30 @@
 
 {block name="content"}
 <!-- 轮播图 -->
-{if condition="isset($sliders) && count($sliders) > 0"}
+{carefree:slider group='home' limit='10' id='slider' key='k' empty='<section class="hero-section"><div class="container"><div class="row align-items-center"><div class="col-lg-6 hero-content" data-aos="fade-right"><h1 class="hero-title">现代化内容管理系统</h1><p class="hero-subtitle">基于ThinkPHP8构建的企业级CMS解决方案，助力您的数字化转型</p><div class="hero-buttons"><a href="/admin" class="btn btn-light-custom">立即体验</a><a href="/features.html" class="btn btn-outline-light-custom">了解更多</a></div></div><div class="col-lg-6 text-center hero-image" data-aos="fade-left"><img src="/assets/images/placeholder/dashboard.svg" alt="CMS Dashboard"></div></div></div></section>'}
 <section class="slider-section">
     <div id="mainSlider" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
-            {volist name="sliders" id="slider" key="k"}
             <button type="button" data-bs-target="#mainSlider" data-bs-slide-to="{$k-1}" class="{$k == 1 ? 'active' : ''}" aria-current="{$k == 1 ? 'true' : 'false'}" aria-label="Slide {$k}"></button>
-            {/volist}
         </div>
         <div class="carousel-inner">
-            {volist name="sliders" id="slider" key="k"}
             <div class="carousel-item {$k == 1 ? 'active' : ''}">
-                <img src="{$slider.image ?? '/assets/images/placeholder/slider.jpg'}" class="d-block w-100" alt="{$slider.title ?? ''}" style="max-height: 600px; object-fit: cover;">
-                {if condition="(isset($slider['title']) && $slider['title']) || (isset($slider['description']) && $slider['description'])"}
+                <img src="{$slider.image ?: '/assets/images/placeholder/slider.jpg'}" class="d-block w-100" alt="{$slider.title ?: ''}" style="max-height: 600px; object-fit: cover;">
+                {if condition="$slider.title || $slider.description"}
                 <div class="carousel-caption d-none d-md-block" style="background: rgba(0,0,0,0.5); padding: 20px; border-radius: 10px;">
-                    {if condition="isset($slider['title']) && $slider['title']"}
+                    {if condition="$slider.title"}
                     <h2>{$slider.title}</h2>
                     {/if}
-                    {if condition="isset($slider['description']) && $slider['description']"}
+                    {if condition="$slider.description"}
                     <p>{$slider.description}</p>
                     {/if}
-                    {if condition="isset($slider['link']) && $slider['link']"}
+                    {if condition="$slider.link"}
                     <a href="{$slider.link}" class="btn btn-light-custom">了解更多</a>
                     {/if}
                 </div>
                 {/if}
             </div>
-            {/volist}
         </div>
-        {if condition="count($sliders) > 1"}
         <button class="carousel-control-prev" type="button" data-bs-target="#mainSlider" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
@@ -43,53 +38,30 @@
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
-        {/if}
     </div>
 </section>
-{else /}
-<!-- 英雄区（无轮播图时显示） -->
-<section class="hero-section">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-6 hero-content" data-aos="fade-right">
-                <h1 class="hero-title">现代化内容管理系统</h1>
-                <p class="hero-subtitle">基于ThinkPHP8构建的企业级CMS解决方案，助力您的数字化转型</p>
-                <div class="hero-buttons">
-                    <a href="/admin" class="btn btn-light-custom">立即体验</a>
-                    <a href="/features.html" class="btn btn-outline-light-custom">了解更多</a>
-                </div>
-            </div>
-            <div class="col-lg-6 text-center hero-image" data-aos="fade-left">
-                <img src="/assets/images/placeholder/dashboard.svg" alt="CMS Dashboard">
-            </div>
-        </div>
-    </div>
-</section>
-{/if}
-
+{/carefree:slider}
 
 <!-- 顶部广告 -->
-{if condition="isset($top_ads) && count($top_ads) > 0"}
+{carefree:ad position='top' limit='3' id='ad' empty=''}
 <section class="top-ads-section">
     <div class="container">
         <div class="row g-3">
-            {volist name="top_ads" id="ad"}
-            <div class="col-lg-{12 / min(count($top_ads), 3)} col-md-6" data-aos="fade-up" data-aos-delay="{$i * 100}">
-                {if condition="isset($ad['link']) && $ad['link']"}
-                <a href="{$ad.link}" target="_blank" class="top-ad-item" title="{$ad.title ?? ''}">
-                    <img src="{$ad.image ?? '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?? ''}">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{$i * 100}">
+                {if condition="$ad.link"}
+                <a href="{$ad.link}" target="_blank" class="top-ad-item" title="{$ad.title ?: ''}">
+                    <img src="{$ad.image ?: '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?: ''}">
                 </a>
                 {else /}
                 <div class="top-ad-item">
-                    <img src="{$ad.image ?? '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?? ''}">
+                    <img src="{$ad.image ?: '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?: ''}">
                 </div>
                 {/if}
             </div>
-            {/volist}
         </div>
     </div>
 </section>
-{/if}
+{/carefree:ad}
 
 <!-- 核心特性 -->
 <section class="features-section">
@@ -189,6 +161,100 @@
     </div>
 </section>
 
+<!-- 热门内容区 -->
+<section class="hot-content-section" style="background: #f8f9fa; padding: 80px 0;">
+    <div class="container">
+        <div class="row g-4">
+            <!-- 最新文章 -->
+            <div class="col-lg-8" data-aos="fade-right">
+                <div class="content-box">
+                    <div class="content-box-header">
+                        <h3><i class="bi bi-newspaper"></i> 最新资讯</h3>
+                        <a href="/articles.html" class="more-link">更多 <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                    {carefree:article limit='6' order='create_time desc' id='article' empty='<div class="empty-state"><p>暂无文章</p></div>'}
+                    <div class="article-list">
+                        <div class="article-item" data-aos="fade-up" data-aos-delay="{$i * 50}">
+                            <div class="row g-3">
+                                {if condition="$article.cover_image"}
+                                <div class="col-md-4">
+                                    <a href="/article/{$article.id}.html" class="article-thumb">
+                                        <img src="{$article.cover_image}" alt="{$article.title}">
+                                    </a>
+                                </div>
+                                <div class="col-md-8">
+                                {else /}
+                                <div class="col-12">
+                                {/if}
+                                    <div class="article-info">
+                                        <h4><a href="/article/{$article.id}.html">{$article.title}</a></h4>
+                                        <p class="article-excerpt">{$article.description ?: mb_substr(strip_tags($article.content), 0, 100, 'utf-8') . '...'}</p>
+                                        <div class="article-meta">
+                                            <span><i class="bi bi-calendar"></i> {$article.create_time|date='Y-m-d'}</span>
+                                            <span><i class="bi bi-eye"></i> {$article.view_count ?: 0}</span>
+                                            <span><i class="bi bi-chat"></i> {$article.comment_count ?: 0}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/carefree:article}
+                </div>
+            </div>
+
+            <!-- 侧边栏 -->
+            <div class="col-lg-4" data-aos="fade-left">
+                <!-- 热门文章排行 -->
+                <div class="content-box mb-4">
+                    <div class="content-box-header">
+                        <h3><i class="bi bi-fire"></i> 热门排行</h3>
+                    </div>
+                    {carefree:rank type='view' limit='10' days='30' id='hot' empty='<div class="empty-state"><p>暂无数据</p></div>'}
+                    <div class="rank-list">
+                        <div class="rank-item">
+                            <span class="rank-num rank-{$i <= 3 ? 'top' : 'normal'}">{$i}</span>
+                            <a href="/article/{$hot.id}.html" class="rank-title" title="{$hot.title}">{$hot.title}</a>
+                            <span class="rank-count">{$hot.view_count}</span>
+                        </div>
+                    </div>
+                    {/carefree:rank}
+                </div>
+
+                <!-- 热门标签云 -->
+                <div class="content-box mb-4">
+                    <div class="content-box-header">
+                        <h3><i class="bi bi-tags"></i> 热门标签</h3>
+                    </div>
+                    {carefree:hotwords limit='20' days='30' orderby='count' id='word' empty='<div class="empty-state"><p>暂无标签</p></div>'}
+                    <div class="tag-cloud">
+                        <a href="{$word.url}" class="tag-item tag-level-{$word.level}" title="{$word.keyword} ({$word.count})">{$word.keyword}</a>
+                    </div>
+                    {/carefree:hotwords}
+                </div>
+
+                <!-- 随机图片展示 -->
+                {carefree:randomimg limit='4' source='article' id='img' empty=''}
+                <div class="content-box">
+                    <div class="content-box-header">
+                        <h3><i class="bi bi-image"></i> 精选图片</h3>
+                    </div>
+                    <div class="random-images">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <a href="{$img.link}" class="random-img-item">
+                                    <img src="{$img.url}" alt="{$img.title}">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/carefree:randomimg}
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- 应用案例 -->
 <section class="showcase-section">
     <div class="container">
@@ -235,7 +301,7 @@
 </section>
 
 <!-- 友情链接 -->
-{if condition="isset($links) && count($links) > 0"}
+{carefree:link group='home' limit='12' id='link' empty=''}
 <section class="links-section" style="background: #f8f9fa; padding: 60px 0;">
     <div class="container">
         <div class="section-title" data-aos="fade-up">
@@ -243,21 +309,19 @@
             <p>携手共进，共创未来</p>
         </div>
         <div class="row g-4 justify-content-center">
-            {volist name="links" id="link"}
             <div class="col-lg-2 col-md-3 col-sm-4 col-6 text-center" data-aos="fade-up" data-aos-delay="{$i * 50}">
-                <a href="{$link.url ?? '#'}" target="_blank" class="link-item" title="{$link.title ?? ''}" rel="nofollow">
-                    {if condition="isset($link['logo']) && $link['logo']"}
+                <a href="{$link.url ?: '#'}" target="_blank" class="link-item" title="{$link.title ?: ''}" rel="nofollow">
+                    {if condition="$link.logo"}
                     <img src="{$link.logo}" alt="{$link.title}" class="link-logo">
                     {else /}
-                    <div class="link-text">{$link.title ?? ''}</div>
+                    <div class="link-text">{$link.title ?: ''}</div>
                     {/if}
                 </a>
             </div>
-            {/volist}
         </div>
     </div>
 </section>
-{/if}
+{/carefree:link}
 
 <!-- CTA -->
 <section class="cta-section">
@@ -270,59 +334,21 @@
 </section>
 
 <!-- 侧边广告（固定在右侧，仅在大屏幕显示） -->
-{if condition="isset($side_ads) && count($side_ads) > 0"}
+{carefree:ad position='side' limit='5' id='ad' empty=''}
 <div class="side-ads-container">
-    {volist name="side_ads" id="ad"}
-    {if condition="isset($ad['link']) && $ad['link']"}
-    <a href="{$ad.link}" target="_blank" class="side-ad-item" title="{$ad.title ?? ''}">
-        <img src="{$ad.image ?? '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?? ''}">
+    {if condition="$ad.link"}
+    <a href="{$ad.link}" target="_blank" class="side-ad-item" title="{$ad.title ?: ''}">
+        <img src="{$ad.image ?: '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?: ''}">
     </a>
     {else /}
     <div class="side-ad-item">
-        <img src="{$ad.image ?? '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?? ''}">
+        <img src="{$ad.image ?: '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?: ''}">
     </div>
     {/if}
-    {/volist}
 </div>
-{/if}
+{/carefree:ad}
 {/block}
 
 {block name="script"}
-<script>
-    // 数字动画
-    function animateValue(element, start, end, duration) {
-        let startTimestamp = null;
-        const step = (timestamp) => {
-            if (!startTimestamp) startTimestamp = timestamp;
-            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-            element.textContent = Math.floor(progress * (end - start) + start);
-            if (progress < 1) {
-                window.requestAnimationFrame(step);
-            }
-        };
-        window.requestAnimationFrame(step);
-    }
-
-    // 监听统计数据区域进入视口
-    const observerOptions = {
-        threshold: 0.5
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                document.querySelectorAll('.stat-number').forEach(stat => {
-                    const count = parseInt(stat.getAttribute('data-count'));
-                    animateValue(stat, 0, count, 2000);
-                });
-                observer.disconnect();
-            }
-        });
-    }, observerOptions);
-
-    const statsSection = document.querySelector('.stats-section');
-    if (statsSection) {
-        observer.observe(statsSection);
-    }
-</script>
+<script src="/assets/js/index.js"></script>
 {/block}

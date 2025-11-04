@@ -60,9 +60,13 @@ Route::group('api', function () {
         Route::get('pages/all', 'app\controller\api\Page@all');                   // 所有单页（不分页）
         Route::resource('pages', 'app\controller\api\Page');                      // RESTful页面资源
 
-        // 评论管理
-        Route::resource('comments', 'app\controller\api\Comment');                // RESTful评论资源
-        Route::post('comments/:id/audit', 'app\controller\api\Comment@audit');   // 审核评论
+        // 后台评论管理
+        Route::get('comments/statistics', 'app\controller\api\CommentManage@statistics');       // 评论统计
+        Route::post('comments/batch-audit', 'app\controller\api\CommentManage@batchAudit');     // 批量审核
+        Route::post('comments/batch-delete', 'app\controller\api\CommentManage@batchDelete');   // 批量删除
+        Route::post('comments/:id/audit', 'app\controller\api\CommentManage@audit');            // 审核评论
+        Route::post('comments/:id/reply', 'app\controller\api\CommentManage@reply');            // 回复评论
+        Route::resource('comments', 'app\controller\api\CommentManage');                         // RESTful评论资源
 
         // 媒体库
         Route::post('media/upload', 'app\controller\api\Media@upload');           // 上传文件
@@ -290,6 +294,122 @@ Route::group('api', function () {
         Route::post('logs/clean-old', 'app\controller\api\LogController@cleanOldLogs');                        // 清理旧日志
         Route::get('logs/export', 'app\controller\api\LogController@exportLogs');                              // 导出日志
 
+        // ========== 扩展功能管理 ==========
+        // 前台用户管理
+        Route::get('front-user-manage/index', 'app\controller\api\FrontUserManage@index');                     // 用户列表
+        Route::get('front-user-manage/statistics', 'app\controller\api\FrontUserManage@statistics');           // 用户统计
+        Route::post('front-user-manage/create', 'app\controller\api\FrontUserManage@create');                  // 创建用户
+        Route::post('front-user-manage/adjust-points/:id', 'app\controller\api\FrontUserManage@adjustPoints'); // 调整积分
+        Route::post('front-user-manage/set-level/:id', 'app\controller\api\FrontUserManage@setLevel');         // 设置等级
+        Route::post('front-user-manage/set-vip/:id', 'app\controller\api\FrontUserManage@setVip');             // 设置VIP
+        Route::post('front-user-manage/change-status/:id', 'app\controller\api\FrontUserManage@changeStatus'); // 修改状态
+
+        // 消息通知管理
+        Route::get('notification-manage/template-index', 'app\controller\api\NotificationManage@templateIndex'); // 模板列表
+        Route::get('notification-manage/template-read/:id', 'app\controller\api\NotificationManage@templateRead'); // 模板详情
+        Route::post('notification-manage/template-create', 'app\controller\api\NotificationManage@templateCreate'); // 创建模板
+        Route::put('notification-manage/template-update/:id', 'app\controller\api\NotificationManage@templateUpdate'); // 更新模板
+        Route::delete('notification-manage/template-delete/:id', 'app\controller\api\NotificationManage@templateDelete'); // 删除模板
+        Route::get('notification-manage/notification-index', 'app\controller\api\NotificationManage@notificationIndex'); // 通知记录列表
+        Route::post('notification-manage/send-system-notification', 'app\controller\api\NotificationManage@sendSystemNotification'); // 发送系统通知
+
+        // 短信服务管理
+        Route::get('sms-manage/config-index', 'app\controller\api\SmsManage@configIndex');                     // 配置列表
+        Route::post('sms-manage/config-create', 'app\controller\api\SmsManage@configCreate');                  // 创建配置
+        Route::put('sms-manage/config-update/:id', 'app\controller\api\SmsManage@configUpdate');               // 更新配置
+        Route::delete('sms-manage/config-delete/:id', 'app\controller\api\SmsManage@configDelete');            // 删除配置
+        Route::get('sms-manage/log-index', 'app\controller\api\SmsManage@logIndex');                           // 短信日志
+        Route::get('sms-manage/statistics', 'app\controller\api\SmsManage@statistics');                        // 发送统计
+
+        // 积分商城管理
+        Route::get('point-shop-manage/goods-index', 'app\controller\api\PointShopManage@goodsIndex');          // 商品列表
+        Route::post('point-shop-manage/goods-create', 'app\controller\api\PointShopManage@goodsCreate');       // 创建商品
+        Route::put('point-shop-manage/goods-update/:id', 'app\controller\api\PointShopManage@goodsUpdate');    // 更新商品
+        Route::delete('point-shop-manage/goods-delete/:id', 'app\controller\api\PointShopManage@goodsDelete'); // 删除商品
+        Route::get('point-shop-manage/order-index', 'app\controller\api\PointShopManage@orderIndex');          // 订单列表
+        Route::post('point-shop-manage/order-deliver/:id', 'app\controller\api\PointShopManage@orderDeliver'); // 订单发货
+        Route::post('point-shop-manage/order-complete/:id', 'app\controller\api\PointShopManage@orderComplete'); // 完成订单
+        Route::post('point-shop-manage/order-cancel/:id', 'app\controller\api\PointShopManage@orderCancel');   // 取消订单
+        Route::get('point-shop-manage/statistics', 'app\controller\api\PointShopManage@statistics');           // 商城统计
+
+        // 投稿管理
+        Route::get('contribute-manage/index', 'app\controller\api\ContributeManage@index');                    // 投稿列表
+        Route::get('contribute-manage/read/:id', 'app\controller\api\ContributeManage@read');                  // 投稿详情
+        Route::post('contribute-manage/audit-pass/:id', 'app\controller\api\ContributeManage@auditPass');      // 审核通过
+        Route::post('contribute-manage/audit-reject/:id', 'app\controller\api\ContributeManage@auditReject');  // 审核拒绝
+        Route::get('contribute-manage/config-index', 'app\controller\api\ContributeManage@configIndex');       // 配置列表
+        Route::post('contribute-manage/config-create', 'app\controller\api\ContributeManage@configCreate');    // 创建配置
+        Route::put('contribute-manage/config-update/:id', 'app\controller\api\ContributeManage@configUpdate'); // 更新配置
+        Route::get('contribute-manage/statistics', 'app\controller\api\ContributeManage@statistics');          // 投稿统计
+
+        // 会员等级管理
+        Route::get('member-level-manage/index', 'app\controller\api\MemberLevelManage@index');                 // 等级配置列表
+        Route::get('member-level-manage/read/:id', 'app\controller\api\MemberLevelManage@read');               // 等级配置详情
+        Route::post('member-level-manage/create', 'app\controller\api\MemberLevelManage@create');              // 创建等级配置
+        Route::put('member-level-manage/update/:id', 'app\controller\api\MemberLevelManage@update');           // 更新等级配置
+        Route::delete('member-level-manage/delete/:id', 'app\controller\api\MemberLevelManage@delete');        // 删除等级配置
+        Route::get('member-level-manage/log-index', 'app\controller\api\MemberLevelManage@logIndex');          // 升级日志列表
+        Route::post('member-level-manage/batch-upgrade', 'app\controller\api\MemberLevelManage@batchUpgrade'); // 批量升级
+        Route::post('member-level-manage/check-user/:id', 'app\controller\api\MemberLevelManage@checkUser');   // 检查用户等级
+        Route::get('member-level-manage/user-progress/:id', 'app\controller\api\MemberLevelManage@userProgress'); // 用户等级进度
+        Route::get('member-level-manage/statistics', 'app\controller\api\MemberLevelManage@statistics');       // 统计信息
+
     })->middleware(\app\middleware\Auth::class);  // 应用JWT认证中间件
 
-})->middleware(\app\middleware\Cors::class);  // 应用跨域中间件
+    // ========== 前台用户系统（不需要JWT认证） ==========
+    Route::group('front', function () {
+        // 前台用户认证
+        Route::post('auth/register', 'app\controller\api\FrontAuth@register');         // 用户注册
+        Route::post('auth/login', 'app\controller\api\FrontAuth@login');               // 用户登录
+        Route::post('auth/send-reset-email', 'app\controller\api\FrontAuth@sendResetEmail'); // 发送密码重置邮件
+        Route::post('auth/reset-password', 'app\controller\api\FrontAuth@resetPassword');    // 重置密码
+        Route::get('auth/verify-email', 'app\controller\api\FrontAuth@verifyEmail');    // 验证邮箱
+
+        // 前台评论（公开接口，游客可访问）
+        Route::get('comments', 'app\controller\api\FrontComment@index');                // 获取文章评论列表
+        Route::post('comments/report', 'app\controller\api\FrontComment@report');       // 举报评论（需要在其他POST路由之前）
+        Route::get('comments/:id', 'app\controller\api\FrontComment@read');             // 获取评论详情
+        Route::post('comments', 'app\controller\api\FrontComment@create');              // 发表评论（支持游客）
+    });
+
+    // ========== 前台用户系统（需要JWT认证） ==========
+    Route::group('front', function () {
+        // 前台用户认证操作
+        Route::post('auth/logout', 'app\controller\api\FrontAuth@logout');              // 退出登录
+        Route::get('auth/info', 'app\controller\api\FrontAuth@info');                   // 获取当前用户信息
+        Route::post('auth/change-password', 'app\controller\api\FrontAuth@changePassword'); // 修改密码
+        Route::post('auth/send-verify-email', 'app\controller\api\FrontAuth@sendVerifyEmail'); // 发送邮箱验证邮件
+
+        // 前台用户资料管理
+        Route::get('profile', 'app\controller\api\FrontProfile@index');                 // 获取用户资料
+        Route::put('profile', 'app\controller\api\FrontProfile@update');                // 更新用户资料
+        Route::post('profile/avatar', 'app\controller\api\FrontProfile@uploadAvatar');  // 上传头像
+
+        // 收藏管理
+        Route::get('favorites', 'app\controller\api\FrontProfile@favorites');           // 收藏列表
+        Route::post('favorites', 'app\controller\api\FrontProfile@addFavorite');        // 添加收藏
+        Route::delete('favorites', 'app\controller\api\FrontProfile@removeFavorite');   // 取消收藏
+
+        // 点赞管理
+        Route::post('likes', 'app\controller\api\FrontProfile@addLike');                // 点赞
+        Route::delete('likes', 'app\controller\api\FrontProfile@removeLike');           // 取消点赞
+
+        // 阅读历史
+        Route::get('read-history', 'app\controller\api\FrontProfile@readHistory');      // 阅读历史列表
+        Route::post('read-history', 'app\controller\api\FrontProfile@addReadHistory');  // 记录阅读历史
+
+        // 积分管理
+        Route::get('point-logs', 'app\controller\api\FrontProfile@pointLogs');          // 积分日志
+
+        // 关注管理
+        Route::post('follow', 'app\controller\api\FrontProfile@follow');                // 关注用户
+        Route::delete('follow', 'app\controller\api\FrontProfile@unfollow');            // 取消关注
+        Route::get('following', 'app\controller\api\FrontProfile@followingList');       // 关注列表
+        Route::get('followers', 'app\controller\api\FrontProfile@followerList');        // 粉丝列表
+
+        // 前台评论（需要登录）
+        Route::post('comments/like', 'app\controller\api\FrontComment@like');           // 点赞评论
+        Route::post('comments/unlike', 'app\controller\api\FrontComment@unlike');       // 取消点赞
+    })->middleware(\app\middleware\Auth::class);  // 应用JWT认证中间件
+
+})->middleware([\app\middleware\Cors::class, \app\middleware\SystemLog::class]);  // 应用跨域中间件和系统日志中间件

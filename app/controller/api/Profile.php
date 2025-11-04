@@ -129,7 +129,8 @@ class Profile extends BaseController
         }
 
         try {
-            $user->password = password_hash($newPassword, PASSWORD_DEFAULT);
+            // 直接赋值原始密码，模型的 setPasswordAttr 修改器会自动加密
+            $user->password = $newPassword;
             $user->save();
             return Response::success([], '密码修改成功');
         } catch (\Exception $e) {

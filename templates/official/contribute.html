@@ -1,0 +1,143 @@
+{extend name="layout" /}
+
+{block name="style"}
+<link rel="stylesheet" href="/assets/css/contribute.css">
+{/block}
+
+{block name="content"}
+<!-- 页面头部 -->
+<section class="contribute-hero">
+    <div class="container text-center">
+        <h1><i class="bi bi-pencil-square"></i> 投稿中心</h1>
+        <p>分享您的精彩内容，与更多人交流</p>
+    </div>
+</section>
+
+<div class="container my-5">
+    <div class="contribute-form">
+        <!-- 投稿须知 -->
+        <div class="contribute-tips">
+            <h6><i class="bi bi-info-circle-fill"></i> 投稿须知</h6>
+            <ul>
+                <li>投稿内容需符合国家法律法规，不得包含违法违规信息</li>
+                <li>文章应为原创内容或已获得转载授权</li>
+                <li>标题简洁明了，内容结构清晰，语言流畅</li>
+                <li>提交后将进入审核流程，审核通过后将发布</li>
+                <li>编辑有权对文章进行适当修改，如有重大修改将与作者沟通</li>
+            </ul>
+        </div>
+
+        <form id="contributeForm">
+            <!-- 基本信息 -->
+            <div class="form-section">
+                <h5 class="form-section-title">基本信息</h5>
+
+                <div class="mb-4">
+                    <label for="title" class="form-label">
+                        文章标题 <span class="required">*</span>
+                    </label>
+                    <input type="text" class="form-control" id="title" required
+                           placeholder="请输入文章标题（建议15-30字）" maxlength="100">
+                    <div class="char-count">
+                        <span id="titleCount">0</span>/100
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="category" class="form-label">
+                        文章分类 <span class="required">*</span>
+                    </label>
+                    <select class="form-select" id="category" required>
+                        <option value="">请选择分类</option>
+                        {carefree:category limit='0' id='cat'}
+                        <option value="{$cat.id}">{$cat.name}</option>
+                        {/carefree:category}
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="tags" class="form-label">
+                        文章标签
+                    </label>
+                    <input type="text" class="form-control" id="tags"
+                           placeholder="多个标签用逗号分隔，如：技术,编程,PHP">
+                    <small class="text-muted">最多5个标签</small>
+                </div>
+
+                <div class="mb-4">
+                    <label for="cover" class="form-label">
+                        封面图片
+                    </label>
+                    <input type="url" class="form-control" id="cover"
+                           placeholder="请输入图片URL地址">
+                    <small class="text-muted">支持 http:// 或 https:// 开头的图片链接</small>
+                </div>
+            </div>
+
+            <!-- 文章内容 -->
+            <div class="form-section">
+                <h5 class="form-section-title">文章内容</h5>
+
+                <div class="mb-4">
+                    <label for="summary" class="form-label">
+                        文章摘要 <span class="required">*</span>
+                    </label>
+                    <textarea class="form-control" id="summary" rows="3" required
+                              placeholder="请输入文章摘要（建议100-200字）" maxlength="500"></textarea>
+                    <div class="char-count">
+                        <span id="summaryCount">0</span>/500
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="content" class="form-label">
+                        正文内容 <span class="required">*</span>
+                    </label>
+                    <textarea class="form-control" id="content" rows="20" required
+                              placeholder="请输入文章正文内容..."></textarea>
+                    <div class="char-count">
+                        <span id="contentCount">0</span> 字
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO信息 -->
+            <div class="form-section">
+                <h5 class="form-section-title">SEO设置（可选）</h5>
+
+                <div class="mb-4">
+                    <label for="seo_title" class="form-label">SEO标题</label>
+                    <input type="text" class="form-control" id="seo_title"
+                           placeholder="默认使用文章标题">
+                </div>
+
+                <div class="mb-4">
+                    <label for="seo_keywords" class="form-label">SEO关键词</label>
+                    <input type="text" class="form-control" id="seo_keywords"
+                           placeholder="多个关键词用逗号分隔">
+                </div>
+
+                <div class="mb-4">
+                    <label for="seo_description" class="form-label">SEO描述</label>
+                    <textarea class="form-control" id="seo_description" rows="2"
+                              placeholder="默认使用文章摘要"></textarea>
+                </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <div class="submit-area">
+                <button type="submit" class="btn btn-primary btn-lg px-5">
+                    <i class="bi bi-send"></i> 提交投稿
+                </button>
+                <a href="/contributions.html" class="btn btn-outline-secondary btn-lg px-5">
+                    <i class="bi bi-x-lg"></i> 取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script src="/assets/js/contribute.js"></script>
+{/block}

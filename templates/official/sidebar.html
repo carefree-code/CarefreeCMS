@@ -1,0 +1,109 @@
+<!-- 侧边栏 -->
+<div class="sidebar">
+    <!-- 热门文章排行 -->
+    <div class="sidebar-widget" data-aos="fade-up">
+        <div class="widget-header">
+            <h3><i class="bi bi-fire"></i> 热门排行</h3>
+        </div>
+        {carefree:rank type='view' limit='10' days='30' id='hot' empty='<div class="empty-state"><p>暂无数据</p></div>'}
+        <div class="rank-list">
+            <div class="rank-item">
+                <span class="rank-num rank-{$i <= 3 ? 'top' : 'normal'}">{$i}</span>
+                <a href="/article/{$hot.id}.html" class="rank-title" title="{$hot.title}">
+                    {$hot.title}
+                </a>
+                <span class="rank-count"><i class="bi bi-eye"></i> {$hot.view_count}</span>
+            </div>
+        </div>
+        {/carefree:rank}
+    </div>
+
+    <!-- 热门标签云 -->
+    <div class="sidebar-widget" data-aos="fade-up" data-aos-delay="100">
+        <div class="widget-header">
+            <h3><i class="bi bi-tags"></i> 热门标签</h3>
+        </div>
+        {carefree:hotwords limit='20' days='30' orderby='count' id='word' empty='<div class="empty-state"><p>暂无标签</p></div>'}
+        <div class="tag-cloud">
+            <a href="{$word.url}" class="tag-item tag-level-{$word.level}" title="{$word.keyword} ({$word.count}次)">
+                {$word.keyword}
+            </a>
+        </div>
+        {/carefree:hotwords}
+    </div>
+
+    <!-- 推荐文章 -->
+    <div class="sidebar-widget" data-aos="fade-up" data-aos-delay="200">
+        <div class="widget-header">
+            <h3><i class="bi bi-star"></i> 推荐阅读</h3>
+        </div>
+        {carefree:article flag='recommend' limit='5' id='rec' empty='<div class="empty-state"><p>暂无推荐</p></div>'}
+        <div class="recommend-list">
+            <div class="recommend-item">
+                <a href="/article/{$rec.id}.html" class="recommend-link">
+                    {if condition="$rec.cover_image"}
+                    <img src="{$rec.cover_image}" alt="{$rec.title}" class="recommend-thumb">
+                    {else /}
+                    <img src="/assets/images/placeholder/article-thumb.svg" alt="{$rec.title}" class="recommend-thumb">
+                    {/if}
+                    <div class="recommend-info">
+                        <h5>{$rec.title}</h5>
+                        <div class="recommend-meta">
+                            <span><i class="bi bi-calendar"></i> {$rec.create_time|date='Y-m-d'}</span>
+                            <span><i class="bi bi-eye"></i> {$rec.view_count ?: 0}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        {/carefree:article}
+    </div>
+
+    <!-- 随机图片 -->
+    {carefree:randomimg limit='4' source='article' id='img' empty=''}
+    <div class="sidebar-widget" data-aos="fade-up" data-aos-delay="300">
+        <div class="widget-header">
+            <h3><i class="bi bi-image"></i> 精选图片</h3>
+        </div>
+        <div class="random-images">
+            <div class="row g-2">
+                <div class="col-6">
+                    <a href="{$img.link}" class="random-img-item">
+                        <img src="{$img.url}" alt="{$img.title}">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/carefree:randomimg}
+
+    <!-- 分类导航 -->
+    <div class="sidebar-widget" data-aos="fade-up" data-aos-delay="400">
+        <div class="widget-header">
+            <h3><i class="bi bi-folder"></i> 分类导航</h3>
+        </div>
+        {carefree:category parent='0' limit='10' id='cat' empty='<div class="empty-state"><p>暂无分类</p></div>'}
+        <div class="category-list">
+            <a href="/category-{$cat.id}.html" class="category-item">
+                <i class="bi bi-folder2"></i> {$cat.name}
+                <span class="category-count">({$cat.article_count ?: 0})</span>
+            </a>
+        </div>
+        {/carefree:category}
+    </div>
+
+    <!-- 侧边广告 -->
+    {carefree:ad position='sidebar' limit='1' id='ad' empty=''}
+    <div class="sidebar-widget" data-aos="fade-up" data-aos-delay="500">
+        {if condition="$ad.link"}
+        <a href="{$ad.link}" target="_blank" class="sidebar-ad" title="{$ad.title ?: ''}">
+            <img src="{$ad.image ?: '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?: ''}">
+        </a>
+        {else /}
+        <div class="sidebar-ad">
+            <img src="{$ad.image ?: '/assets/images/placeholder/ad.jpg'}" alt="{$ad.title ?: ''}">
+        </div>
+        {/if}
+    </div>
+    {/carefree:ad}
+</div>

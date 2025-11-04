@@ -1,14 +1,8 @@
 /**
  * Main.js - 全局JavaScript
- * 包含AOS动画初始化、导航栏效果、回到顶部等功能
+ * 包含导航栏效果、回到顶部等功能
+ * 注意：使用传统function语法，避免箭头函数导致模板解析错误
  */
-
-// 初始化AOS动画
-AOS.init({
-    duration: 1000,
-    once: true,
-    offset: 100
-});
 
 // 导航栏滚动效果
 window.addEventListener('scroll', function() {

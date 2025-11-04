@@ -1,0 +1,89 @@
+{extend name="layout" /}
+
+{block name="style"}
+<link rel="stylesheet" href="/assets/css/notifications.css">
+{/block}
+
+{block name="content"}
+<!-- 页面头部 -->
+<section class="notifications-hero">
+    <div class="container text-center">
+        <h1><i class="bi bi-bell"></i> 消息通知</h1>
+        <p>查看您的最新消息和通知</p>
+    </div>
+</section>
+
+<div class="container my-5">
+    <div class="notification-container">
+        <!-- 筛选栏 -->
+        <div class="filter-bar">
+            <div>
+                <span class="text-muted">共有消息</span>
+                <strong>{$total ?: 0}</strong>
+                <span class="text-muted">条</span>
+            </div>
+        </div>
+
+        <!-- 标签栏 -->
+        <div class="notification-tabs">
+            <a href="/notifications.html" class="notification-tab {if condition='!isset($type) || $type eq ""'}active{/if}">
+                全部通知
+            </a>
+            <a href="/notifications.html?type=system" class="notification-tab {if condition='isset($type) && $type eq "system"'}active{/if}">
+                系统通知
+            </a>
+            <a href="/notifications.html?type=reply" class="notification-tab {if condition='isset($type) && $type eq "reply"'}active{/if}">
+                评论回复
+            </a>
+            <a href="/notifications.html?type=like" class="notification-tab {if condition='isset($type) && $type eq "like"'}active{/if}">
+                点赞通知
+            </a>
+            <a href="/notifications.html?type=follow" class="notification-tab {if condition='isset($type) && $type eq "follow"'}active{/if}">
+                关注通知
+            </a>
+        </div>
+
+        <!-- 通知列表 -->
+        <div class="notification-list">
+            {carefree:notification limit='20' userid='$current_user_id' type='$type' id='notice' empty='<div class="empty-state"><i class="bi bi-bell-slash"></i><h5>暂无通知</h5><p class="text-muted">您还没有收到任何通知消息</p></div>'}
+            <div class="notification-item {if condition='$notice.is_read eq 0'}unread{/if}">
+                <div class="notification-icon {$notice.type ?: 'system'}">
+                    {if condition="$notice.type eq 'reply'"}
+                    <i class="bi bi-chat-dots-fill"></i>
+                    {elseif condition="$notice.type eq 'like'"/}
+                    <i class="bi bi-heart-fill"></i>
+                    {elseif condition="$notice.type eq 'follow'"/}
+                    <i class="bi bi-person-plus-fill"></i>
+                    {else /}
+                    <i class="bi bi-info-circle-fill"></i>
+                    {/if}
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">
+                        {$notice.title}
+                        {if condition="$notice.is_read eq 0"}
+                        <span class="unread-badge"></span>
+                        {/if}
+                    </div>
+                    <div class="notification-text">{$notice.content_preview ?: $notice.content}</div>
+                    <div class="notification-time">
+                        <i class="bi bi-clock"></i> {$notice.time_ago ?: $notice.create_time}
+                    </div>
+                </div>
+            </div>
+            {/carefree:notification}
+        </div>
+    </div>
+
+    <!-- 分页 -->
+    {if condition="isset($last_page) && $last_page > 1"}
+    <nav class="mt-4">
+        {carefree:pagelist total='$total' pagesize='$pagesize' currentpage='$current_page' url='/notifications.html?page={page}' style='full' /}
+    </nav>
+    {/if}
+</div>
+{/block}
+
+{block name="script"}
+<script src="/assets/js/notifications.js"></script>
+{/block}

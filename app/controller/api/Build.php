@@ -92,63 +92,17 @@ class Build extends BaseController
 
     /**
      * 生成首页
+     * 注意：使用Carefree标签库后，数据由标签自动获取，控制器只需传递配置即可
      */
     public function index()
     {
         try {
-            // 获取最新文章
-            $articles = Article::with(['category', 'user'])
-                ->where('status', 1)  // 1 = 已发布
-                ->order('create_time', 'desc')
-                ->limit(10)
-                ->select()
-                ->toArray();
-
-            // 获取轮播图（首页轮播图组，group_id = 1）
-            $sliders = \app\model\Slider::where('group_id', 1)
-                ->where('status', 1)
-                ->order('sort', 'asc')
-                ->select()
-                ->toArray();
-
-            // 获取友情链接（首页友情链接组，group_id = 1）
-            $links = \app\model\Link::where('group_id', 1)
-                ->where('status', 1)
-                ->order('sort', 'asc')
-                ->select()
-                ->toArray();
-
-            // 获取广告（首页顶部广告位，position_id = 1；首页侧边广告位，position_id = 2）
-            $topAds = \app\model\Ad::where('position_id', 1)
-                ->where('status', 1)
-                ->whereTime('start_time', '<=', date('Y-m-d H:i:s'))
-                ->where(function($query) {
-                    $query->whereNull('end_time')->whereOr('end_time', '>=', date('Y-m-d H:i:s'));
-                })
-                ->order('sort', 'asc')
-                ->select()
-                ->toArray();
-
-            $sideAds = \app\model\Ad::where('position_id', 2)
-                ->where('status', 1)
-                ->whereTime('start_time', '<=', date('Y-m-d H:i:s'))
-                ->where(function($query) {
-                    $query->whereNull('end_time')->whereOr('end_time', '>=', date('Y-m-d H:i:s'));
-                })
-                ->order('sort', 'asc')
-                ->select()
-                ->toArray();
-
             // 获取首页模板配置，默认使用 index
             $template = $this->config['index_template'] ?? 'index';
 
             // 渲染模板（使用模板套装路径）
+            // Carefree标签库会自动获取所有需要的数据（文章、轮播图、链接、广告等）
             $content = View::fetch($this->getTemplatePath($template), [
-                'articles' => $articles,
-                'sliders' => $sliders,
-                'links' => $links,
-                'top_ads' => $topAds,
-                'side_ads' => $sideAds,
                 'config' => $this->config,
                 'is_home' => true  // 标记为首页
             ]);
@@ -180,39 +134,22 @@ class Build extends BaseController
 
     /**
      * 生成文章列表页
+     * 注意：使用Carefree标签库后，文章数据由标签自动获取
      */
     public function articles()
     {
         try {
             $pageSize = 20; // 每页文章数
 
-            // 获取所有已发布的文章
-            $totalQuery = Article::where('status', 1);
-            $total = $totalQuery->count();
+            // 获取文章总数用于计算分页
+            $total = Article::where('status', 1)->count();
             $totalPages = ceil($total / $pageSize);
-
-            // 获取侧边栏数据（所有页面共用）
-            $categories = Category::select()->toArray();
-            $tags = Tag::where('status', 1)->limit(20)->select()->toArray();
-            $hotArticles = Article::where('status', 1)
-                ->order('view_count', 'desc')
-                ->limit(5)
-                ->field('id,title,view_count')
-                ->select()
-                ->toArray();
 
             // 生成每一页
             for ($page = 1; $page <= $totalPages; $page++) {
-                $articles = Article::with(['category', 'user', 'tags'])
-                    ->where('status', 1)
-                    ->order(['is_top' => 'desc', 'publish_time' => 'desc'])
-                    ->page($page, $pageSize)
-                    ->select()
-                    ->toArray();
-
                 // 渲染模板（使用模板套装路径）
+                // Carefree标签库会自动获取文章、分类、标签、热门文章等数据
                 $content = View::fetch($this->getTemplatePath('articles'), [
-                    'articles' => $articles,
                     'config' => $this->config,
                     'is_home' => false,
                     'title' => $page > 1 ? "文章列表 - 第{$page}页" : '文章列表',
@@ -223,10 +160,7 @@ class Build extends BaseController
                         'total_pages' => $totalPages,
                         'total' => $total,
                         'page_size' => $pageSize
-                    ],
-                    'categories' => $categories,
-                    'tags' => $tags,
-                    'hot_articles' => $hotArticles
+                    ]
                 ]);
 
                 // 保存文件
@@ -286,7 +220,7 @@ class Build extends BaseController
 
             trace('文章数据加载完成: ' . json_encode($article->toArray(), JSON_UNESCAPED_UNICODE), 'info');
 
-            // 获取上一篇和下一篇
+            // 获取上一篇和下一篇（这些数据还是由控制器传递，因为没有对应的标签）
             $prev = Article::where('id', '<', $id)
                 ->where('status', 1)  // 1 = 已发布
                 ->order('id', 'desc')
@@ -299,23 +233,12 @@ class Build extends BaseController
                 ->field('id,title')
                 ->find();
 
-            // 获取相关文章（同分类的其他文章）
-            $relatedArticles = Article::where('category_id', $article->category_id)
-                ->where('id', '<>', $id)
-                ->where('status', 1)
-                ->order('view_count', 'desc')
-                ->limit(3)
-                ->field('id,title,cover_image,create_time')
-                ->select()
-                ->toArray();
-
             $templatePath = $this->getTemplatePath('article');
             $templateData = [
                 'article' => $article->toArray(),
                 'prev' => $prev ? $prev->toArray() : null,
                 'next' => $next ? $next->toArray() : null,
-                'related_articles' => $relatedArticles,
-                'comment_count' => 0,  // 评论功能暂未实现
+                // 相关文章、评论等由Carefree标签自动获取
                 'config' => $this->config,
                 'is_home' => false,
                 'title' => $article->title,
@@ -396,7 +319,7 @@ class Build extends BaseController
             $hotArticles = Article::where('status', 1)
                 ->order('view_count', 'desc')
                 ->limit(5)
-                ->field('id,title,view_count')
+                ->field('id,title,view_count,cover_image,create_time')
                 ->select()
                 ->toArray();
 
@@ -486,7 +409,7 @@ class Build extends BaseController
             $hotArticles = Article::where('status', 1)
                 ->order('view_count', 'desc')
                 ->limit(5)
-                ->field('id,title,view_count')
+                ->field('id,title,view_count,cover_image,create_time')
                 ->select()
                 ->toArray();
 
@@ -671,7 +594,7 @@ class Build extends BaseController
             $hotArticles = Article::where('status', 1)
                 ->order('view_count', 'desc')
                 ->limit(5)
-                ->field('id,title,view_count')
+                ->field('id,title,view_count,cover_image,create_time')
                 ->select()
                 ->toArray();
 
@@ -1029,9 +952,13 @@ class Build extends BaseController
 
             if ($result['success']) {
                 // 记录日志
-                $this->logBuildAction('资源同步', '全部资源', $result['total_files'] . '个文件', [
-                    'files' => $result['log']
-                ]);
+                StaticBuildLog::log(
+                    StaticBuildLog::BUILD_TYPE_MANUAL,
+                    'assets',
+                    0,
+                    StaticBuildLog::STATUS_SUCCESS,
+                    '同步了 ' . $result['total_files'] . ' 个文件'
+                );
 
                 return Response::success($result, '资源同步成功');
             } else {

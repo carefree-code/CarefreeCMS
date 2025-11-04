@@ -13,6 +13,13 @@ use think\facade\Route;
 // 引入 API 路由配置
 require __DIR__ . '/api.php';
 
+// 前台动态页面路由
+Route::get('members.html', 'Front/members');
+Route::get('notifications.html', 'Front/notifications');
+Route::get('contributions.html', 'Front/contributions');
+Route::get('contribute.html', 'Front/contribute');
+Route::get('profile.html', 'Front/profile');
+
 // 静态文件访问路由（html目录）
 // 使用完全匹配模式来捕获所有html/*路径
 Route::any('html/[:path]', 'Html/index')->pattern(['path' => '.+'])->append(['path' => '']);

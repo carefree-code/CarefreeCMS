@@ -1,0 +1,83 @@
+{extend name="layout" /}
+
+{block name="style"}
+<link rel="stylesheet" href="/assets/css/login.css">
+{/block}
+
+{block name="content"}
+<div class="auth-page">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>欢迎回来</h2>
+                <p>登录您的账户继续使用</p>
+            </div>
+
+            <!-- 错误提示 -->
+            <div id="loginAlert" class="alert alert-danger" style="display: none;" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span id="loginAlertMessage"></span>
+            </div>
+
+            <!-- 登录表单 -->
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="email" class="form-label">邮箱地址</label>
+                    <input type="email" class="form-control" id="email" placeholder="your@email.com" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">密码</label>
+                    <input type="password" class="form-control" id="password" placeholder="输入密码" required>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remember">
+                    <label class="form-check-label" for="remember">
+                        记住我
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 btn-login" id="loginSubmitBtn">
+                    <span class="btn-text">登录</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+
+                <div class="text-center mt-3">
+                    <a href="/forgot-password.html" class="text-link">忘记密码？</a>
+                </div>
+            </form>
+
+            <div class="divider">
+                <span>或使用其他方式登录</span>
+            </div>
+
+            <!-- 第三方登录 -->
+            <div class="social-login">
+                <button class="social-btn" type="button" onclick="alert('微信登录功能开发中...')">
+                    <i class="bi bi-wechat"></i>
+                    <span>微信</span>
+                </button>
+                <button class="social-btn" type="button" onclick="alert('QQ登录功能开发中...')">
+                    <i class="bi bi-qq"></i>
+                    <span>QQ</span>
+                </button>
+                <button class="social-btn" type="button" onclick="alert('GitHub登录功能开发中...')">
+                    <i class="bi bi-github"></i>
+                    <span>GitHub</span>
+                </button>
+            </div>
+
+            <div class="text-center">
+                <span class="text-muted">还没有账户？</span>
+                <a href="/register.html" class="text-link">立即注册</a>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/login.js"></script>
+{/block}

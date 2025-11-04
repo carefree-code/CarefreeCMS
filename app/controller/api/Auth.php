@@ -6,6 +6,7 @@ use app\BaseController;
 use app\common\Response;
 use app\common\Jwt;
 use app\common\Logger;
+use app\service\SystemLogger;
 use app\model\AdminUser;
 use think\Request;
 use think\facade\Db;
@@ -34,18 +35,24 @@ class Auth extends BaseController
 
         if (!$user) {
             Logger::login($username, false, '用户不存在');
+            SystemLogger::logLogin(0, $username, false, '用户不存在');
+            SystemLogger::logSecurity('failed_login', 'warning', "尝试登录不存在的用户: {$username}");
             return Response::error('用户不存在');
         }
 
         // 验证密码
         if (!$user->checkPassword($password)) {
             Logger::login($username, false, '密码错误');
+            SystemLogger::logLogin(0, $username, false, '密码错误');
+            SystemLogger::logSecurity('failed_login', 'warning', "用户 {$username} 密码错误");
             return Response::error('密码错误');
         }
 
         // 检查用户状态
         if ($user->status != 1) {
             Logger::login($username, false, '账号已被禁用');
+            SystemLogger::logLogin($user->id, $username, false, '账号已被禁用');
+            SystemLogger::logSecurity('disabled_account', 'info', "已禁用用户 {$username} 尝试登录");
             return Response::error('账号已被禁用');
         }
 
@@ -63,6 +70,7 @@ class Auth extends BaseController
 
         // 记录登录成功日志
         Logger::login($username, true);
+        SystemLogger::logLogin($user->id, $username, true);
 
         // 返回用户信息和token
         return Response::success([

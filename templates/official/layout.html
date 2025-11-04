@@ -4,25 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {if condition="$is_home"}
-    <title>{$config.web_title ?: ($config.web_name ?: 'ThinkPHP6 CMS')}</title>
-    <meta name="keywords" content="{$config.web_keywords ?: ''}">
-    <meta name="description" content="{$config.web_description ?: ''}">
+    <title>{carefree:config name='web_title' /} - {carefree:config name='web_name' /}</title>
+    <meta name="keywords" content="{carefree:config name='web_keywords' /}">
+    <meta name="description" content="{carefree:config name='web_description' /}">
     {else /}
-    <title>{$title ?: '页面标题'} - {$config.web_name ?: 'ThinkPHP6 CMS'}</title>
+    <title>{$title ?: '页面标题'} - {carefree:config name='web_name' /}</title>
     <meta name="keywords" content="{$keywords ?: ''}">
     <meta name="description" content="{$description ?: ''}">
     {/if}
 
-    <!-- Bootstrap 5.3.3 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    <!-- AOS动画库 -->
-    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <!-- Bootstrap 5.3.3 CSS - 本地版本 -->
+    <link href="/assets/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons - 本地版本 -->
+    <link href="/assets/css/bootstrap-icons.min.css" rel="stylesheet">
 
     <!-- 自定义CSS -->
     <link rel="stylesheet" href="/assets/css/common.css">
     <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/comment.css">
 
     {block name="style"}{/block}
 </head>
@@ -30,7 +29,7 @@
     <!-- 导航栏 -->
     <nav class="navbar navbar-expand-lg fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="/">{$config.web_name ?: 'ThinkPHP6 CMS'}</a>
+            <a class="navbar-brand" href="/">{carefree:config name='web_name' /}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -51,9 +50,34 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/contact.html">联系我们</a>
                     </li>
-                    <!-- <li class="nav-item ms-lg-3">
-                        <a class="btn btn-primary-custom" href="/admin">管理后台</a>
-                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="/members.html">会员中心</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contribute.html">我要投稿</a>
+                    </li>
+                    <!-- 用户登录状态 -->
+                    <li class="nav-item dropdown ms-lg-3" id="userDropdown" style="display: none;">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span id="userName">用户</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/profile.html"><i class="bi bi-person"></i> 个人中心</a></li>
+                            <li><a class="dropdown-item" href="/notifications.html"><i class="bi bi-bell"></i> 我的通知 <span class="badge bg-danger ms-1" id="notificationBadge" style="display:none;"></span></a></li>
+                            <li><a class="dropdown-item" href="/contributions.html"><i class="bi bi-file-text"></i> 我的投稿</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/profile.html#favorites"><i class="bi bi-heart"></i> 我的收藏</a></li>
+                            <li><a class="dropdown-item" href="/profile.html#comments"><i class="bi bi-chat"></i> 我的评论</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item ms-lg-3" id="loginBtn">
+                        <a class="btn btn-outline-primary btn-sm" href="/login.html">登录</a>
+                    </li>
+                    <li class="nav-item ms-lg-2" id="registerBtn">
+                        <a class="btn btn-primary btn-sm" href="/register.html">注册</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -69,8 +93,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 mb-4">
-                    <h5>{$config.web_name ?: 'ThinkPHP6 CMS'}</h5>
-                    <p class="mb-4">{$config.web_description ?: '基于ThinkPHP6开发的现代化内容管理系统'}</p>
+                    <h5>{carefree:config name='web_name' /}</h5>
+                    <p class="mb-4">{carefree:config name='web_description' /}</p>
                     <div class="social-links">
                         <a href="#"><i class="bi bi-wechat"></i></a>
                         <a href="#"><i class="bi bi-qq"></i></a>
@@ -107,8 +131,8 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2025 {$config.web_name ?: 'ThinkPHP6 CMS'}. All rights reserved. |
-                   <a href="https://beian.miit.gov.cn/" target="_blank" style="display: inline;">ICP备案号</a>
+                <p>&copy; 2025 {carefree:config name='web_name' /}. All rights reserved. |
+                   <a href="https://beian.miit.gov.cn/" target="_blank" style="display: inline;">{carefree:config name='icp' /}</a>
                 </p>
             </div>
         </div>
@@ -119,13 +143,12 @@
         <i class="bi bi-arrow-up"></i>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- AOS动画库 -->
-    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+    <!-- Bootstrap JS - 本地版本 -->
+    <script src="/assets/js/bootstrap.bundle.min.js"></script>
 
     <!-- 自定义JS -->
     <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/auth.js"></script>
 
     {block name="script"}{/block}
 </body>

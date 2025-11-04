@@ -1,0 +1,93 @@
+/**
+ * contribute.css - 投稿中心页面样式
+ */
+
+.contribute-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 0 40px;
+}
+
+.contribute-hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.contribute-form {
+    background: white;
+    border-radius: 12px;
+    padding: 40px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.form-section {
+    margin-bottom: 30px;
+}
+
+.form-section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    color: #333;
+}
+
+.contribute-tips {
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    border-radius: 4px;
+}
+
+.contribute-tips h6 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.contribute-tips ul {
+    margin: 0;
+    padding-left: 20px;
+    color: #666;
+}
+
+.contribute-tips li {
+    margin-bottom: 5px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.required {
+    color: #f5576c;
+}
+
+#editor {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    min-height: 400px;
+    padding: 15px;
+}
+
+.char-count {
+    text-align: right;
+    color: #999;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+.submit-area {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #f0f0f0;
+}

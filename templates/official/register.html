@@ -1,0 +1,76 @@
+{extend name="layout" /}
+
+{block name="style"}
+<link rel="stylesheet" href="/assets/css/register.css">
+{/block}
+
+{block name="content"}
+<div class="auth-page">
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h2>创建账户</h2>
+                <p>填写信息，快速注册</p>
+            </div>
+
+            <!-- 提示信息 -->
+            <div id="registerAlert" class="alert" style="display: none;" role="alert">
+                <i class="bi me-2"></i>
+                <span id="registerAlertMessage"></span>
+            </div>
+
+            <!-- 注册表单 -->
+            <form id="registerForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">用户名</label>
+                    <input type="text" class="form-control" id="username" placeholder="输入用户名" required minlength="3" maxlength="20">
+                    <small class="text-muted">3-20个字符，支持字母、数字和下划线</small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">邮箱地址</label>
+                    <input type="email" class="form-control" id="email" placeholder="your@email.com" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">密码</label>
+                    <input type="password" class="form-control" id="password" placeholder="输入密码" required minlength="6">
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text text-muted" id="strengthText">至少6个字符</div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">确认密码</label>
+                    <input type="password" class="form-control" id="confirmPassword" placeholder="再次输入密码" required>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="agree" required>
+                    <label class="form-check-label" for="agree">
+                        我已阅读并同意 <a href="/terms.html" class="text-link" target="_blank">服务条款</a> 和
+                        <a href="/privacy.html" class="text-link" target="_blank">隐私政策</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 btn-register" id="registerSubmitBtn">
+                    <span class="btn-text">注册</span>
+                    <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <span class="text-muted">已有账户？</span>
+                <a href="/login.html" class="text-link">立即登录</a>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script src="/assets/js/register.js"></script>
+{/block}

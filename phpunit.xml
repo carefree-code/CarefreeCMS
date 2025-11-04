@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.0/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutTodoTestedCode="true"
+         beStrictAboutUselessTests="true"
+         cacheDirectory=".phpunit.cache"
+         colors="true"
+         displayDetailsOnIncompleteTests="true"
+         displayDetailsOnSkippedTests="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         failOnRisky="true"
+         failOnWarning="false"
+         stopOnDefect="false"
+         verbose="true">
+    <testsuites>
+        <testsuite name="Unit Tests">
+            <directory suffix="Test.php">./tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature Tests">
+            <directory suffix="Test.php">./tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+
+    <source processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./app</directory>
+        </include>
+        <exclude>
+            <directory suffix="Exception.php">./app</directory>
+            <file>./app/event.php</file>
+            <file>./app/common.php</file>
+            <file>./app/service.php</file>
+            <file>./app/provider.php</file>
+        </exclude>
+    </source>
+
+    <coverage processUncoveredFiles="true"
+              pathCoverage="false"
+              ignoreDeprecatedCodeUnits="true"
+              disableCodeCoverageIgnore="false">
+        <report>
+            <html outputDirectory=".phpunit.coverage"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false"/>
+            <clover outputFile=".phpunit.coverage/coverage.xml"/>
+        </report>
+        <include>
+            <directory suffix=".php">./app</directory>
+        </include>
+        <exclude>
+            <directory>./app/event.php</directory>
+            <directory>./app/common.php</directory>
+            <directory>./app/service.php</directory>
+            <directory>./app/provider.php</directory>
+        </exclude>
+    </coverage>
+
+    <php>
+        <ini name="display_errors" value="On"/>
+        <ini name="display_startup_errors" value="On"/>
+        <ini name="error_reporting" value="-1"/>
+        <ini name="xdebug.mode" value="coverage"/>
+        <env name="APP_DEBUG" value="true"/>
+        <env name="APP_ENV" value="testing"/>
+    </php>
+</phpunit>

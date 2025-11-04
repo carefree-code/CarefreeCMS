@@ -27,6 +27,7 @@ class OperationLog extends Model
     const MODULE_CONFIG = 'config';          // 配置
     const MODULE_PROFILE = 'profile';        // 个人信息
     const MODULE_BUILD = 'build';            // 静态生成
+    const MODULE_SYSTEM = 'system';          // 系统
 
     // 操作类型常量
     const ACTION_LOGIN = 'login';            // 登录
@@ -78,6 +79,7 @@ class OperationLog extends Model
             self::MODULE_CONFIG => '配置',
             self::MODULE_PROFILE => '个人信息',
             self::MODULE_BUILD => '静态生成',
+            self::MODULE_SYSTEM => '系统',
         ];
     }
 

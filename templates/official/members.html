@@ -1,0 +1,119 @@
+{extend name="layout" /}
+
+{block name="style"}
+<link rel="stylesheet" href="/assets/css/members.css">
+{/block}
+
+{block name="content"}
+<!-- 页面头部 -->
+<section class="members-hero">
+    <div class="container text-center">
+        <h1><i class="bi bi-award"></i> 会员中心</h1>
+        <p>加入我们的会员体系，享受更多专属权益</p>
+    </div>
+</section>
+
+<div class="container my-5">
+    <!-- 会员等级说明 -->
+    <section class="mb-5">
+        <h2 class="section-title">会员等级体系</h2>
+        <div class="row">
+            {carefree:memberlevel limit='10' id='level'}
+            <div class="col-lg-4 col-md-6">
+                <div class="member-level-card level-{$level.level}">
+                    <div class="level-header">
+                        <div class="level-icon">
+                            <i class="bi bi-star-fill text-white"></i>
+                        </div>
+                        <div class="level-info">
+                            <h4>{$level.name}</h4>
+                            <p class="points mb-0">
+                                {if condition="$level.level eq 0"}
+                                    默认等级
+                                {else /}
+                                    需要 {$level.upgrade_points} 积分
+                                {/if}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="level-benefits">
+                        <p>{$level.description ?: '暂无描述'}</p>
+                        {if condition="$level.user_count > 0"}
+                        <small class="text-muted">
+                            <i class="bi bi-people"></i> 当前 {$level.user_count} 人
+                        </small>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            {/carefree:memberlevel}
+        </div>
+    </section>
+
+    <!-- 排行榜 -->
+    <section class="mb-5">
+        <h2 class="section-title">会员排行榜</h2>
+
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchRank('points')">积分榜</button>
+            <button class="tab-btn" onclick="switchRank('vip')">VIP会员</button>
+        </div>
+
+        <!-- 积分排行榜 -->
+        <div class="rank-list" id="points-rank">
+            <h5 class="mb-4"><i class="bi bi-trophy-fill text-warning"></i> 积分排行榜 TOP 20</h5>
+            {carefree:frontuser limit='20' orderby='points' status='1' id='user' key='index'}
+            <div class="rank-item">
+                <div class="rank-number {if condition='$i eq 1'}top1{elseif condition='$i eq 2'}top2{elseif condition='$i eq 3'}top3{else /}normal{/if}">
+                    {$i}
+                </div>
+                <img src="{$user.avatar ?: '/static/images/default-avatar.png'}" alt="{$user.nickname}" class="rank-avatar">
+                <div class="rank-info">
+                    <div class="rank-name">
+                        {$user.nickname ?: $user.username}
+                        {if condition="$user.is_vip eq 1"}
+                        <span class="vip-badge"><i class="bi bi-gem"></i> VIP</span>
+                        {/if}
+                    </div>
+                    <div class="rank-level">
+                        <i class="bi bi-award"></i> {$user.level_name ?: 'LV' . $user.level}
+                    </div>
+                </div>
+                <div class="rank-points">
+                    {$user.points} <small class="text-muted">积分</small>
+                </div>
+            </div>
+            {/carefree:frontuser}
+        </div>
+
+        <!-- VIP会员列表 -->
+        <div class="rank-list" id="vip-rank" style="display: none;">
+            <h5 class="mb-4"><i class="bi bi-gem text-warning"></i> VIP 会员</h5>
+            {carefree:frontuser limit='20' isvip='1' orderby='points' status='1' id='vipUser' key='vipIndex'}
+            <div class="rank-item">
+                <div class="rank-number {if condition='$vipIndex eq 0'}top1{elseif condition='$vipIndex eq 1'}top2{elseif condition='$vipIndex eq 2'}top3{else /}normal{/if}">
+                    {$vipIndex + 1}
+                </div>
+                <img src="{$vipUser.avatar ?: '/static/images/default-avatar.png'}" alt="{$vipUser.nickname}" class="rank-avatar">
+                <div class="rank-info">
+                    <div class="rank-name">
+                        {$vipUser.nickname ?: $vipUser.username}
+                        <span class="vip-badge"><i class="bi bi-gem"></i> VIP</span>
+                    </div>
+                    <div class="rank-level">
+                        <i class="bi bi-award"></i> {$vipUser.level_name ?: 'LV' . $vipUser.level}
+                    </div>
+                </div>
+                <div class="rank-points">
+                    {$vipUser.points} <small class="text-muted">积分</small>
+                </div>
+            </div>
+            {/carefree:frontuser}
+        </div>
+    </section>
+</div>
+{/block}
+
+{block name="script"}
+<script src="/assets/js/members.js"></script>
+{/block}
