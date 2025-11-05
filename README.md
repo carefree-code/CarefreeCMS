@@ -9,8 +9,6 @@
 
 QQ群：113572201
 
-![QQ群](qqqun.jpg)
-
 ## 系统简介
 
 逍遥内容管理系统（CarefreeCMS）是一款功能强大、易于使用的内容管理平台，采用前后端分离架构，支持静态页面生成，适用于个人博客、企业网站、新闻媒体等各类内容发布场景。
@@ -459,3 +457,6 @@ npm run build
 ---
 
 Made with ❤️ by CarefreeCMS Team © 2025
+
+
+![QQ群](qqqun.jpg)
