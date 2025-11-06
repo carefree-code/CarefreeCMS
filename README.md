@@ -356,6 +356,22 @@ npm run build
 
 11. **✅ 常量定义修复** - 修复`MODULE_SYSTEM`未定义错误，规范常量管理
 
+**模板系统增强：**
+
+12. **✅ Carefree标签库 V1.6** - 全面支持变量参数 🆕
+   - 9个核心标签支持变量参数（article, category, link, slider, related等）
+   - 支持动态数据查询：`typeid='$category.id'`, `tagid='$tag.id'`
+   - 完美适配分类页、标签页、文章详情等动态场景
+   - 100%向后兼容，无需修改现有模板代码
+   - 详见：[Carefree标签库V1.6文档](docs/carefree-taglib/CAREFREE_TAGLIB_V1.6.md)
+
+13. **✅ Config标签修复** - 修复配置标签无法读取数据问题 🆕
+   - 修正 ConfigTagService 使用错误的模型和字段名
+   - 更新所有文档中的配置键名（web_name → site_name 等）
+   - 添加完整的配置项列表和使用说明
+   - 更新文档：CAREFREE_TAGLIB_GUIDE.md、CAREFREE_QUICK_REFERENCE.md、CAREFREE_TROUBLESHOOTING.md
+   - 配置数据支持1小时缓存，提升访问性能
+
 **技术改进：**
 - 使用双日志系统：Logger（操作日志） + SystemLogger（系统/登录/安全日志）
 - 中间件自动化：SystemLog中间件拦截所有API请求并记录
@@ -429,7 +445,7 @@ npm run build
 ### v1.0.0 (2025-10-15)
 - 🎉 首个正式版本发布
 - ✨ 完整的内容管理功能
-- ✨ 用户权限管理系统javascript:;
+- ✨ 用户权限管理系统
 - ✨ 媒体文件管理
 - ✨ SEO优化功能
 - ✨ 操作日志记录
@@ -457,6 +473,5 @@ npm run build
 ---
 
 Made with ❤️ by CarefreeCMS Team © 2025
-
 
 ![QQ群](qqqun.jpg)
