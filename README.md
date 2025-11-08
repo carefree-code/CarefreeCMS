@@ -5,7 +5,7 @@
 ![Vue](https://img.shields.io/badge/vue-3.5-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-orange.svg)
 
-一个现代化、轻量级的内容管理系统，专为快速构建静态网站而设计。
+一个现代化、轻量级的内容管理系统，专为快速构建静态网站而设计。完整开源代码，免费无限商用，没有任何限制。
 
 QQ群：113572201
 
@@ -28,7 +28,7 @@ QQ群：113572201
 - 👥 **用户管理** - 多用户系统，支持用户角色分配
 - 🔍 **SEO优化** - 自动提取TDK、Sitemap生成
 - 📊 **操作日志** - 详细的用户操作审计记录，支持批量删除
-- 🎨 **现代化UI** - 基于 Element Plus的美观界面
+- 🎨 **现代化UI** - 基于 Element Plus 的美观界面
 
 ## 📁 项目结构
 
@@ -473,5 +473,4 @@ npm run build
 ---
 
 Made with ❤️ by CarefreeCMS Team © 2025
-
 ![QQ群](qqqun.jpg)
