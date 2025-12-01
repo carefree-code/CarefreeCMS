@@ -1069,8 +1069,12 @@ class Build extends BaseController
             // 渲染模板
             $content = $this->renderTemplate($this->getTemplatePath('page'), $templateData);
 
-            // 保存文件
-            $filePath = $this->outputPath . $page->slug . '.html';
+            // 保存文件（使用 UrlHelper 生成正确的路径）
+            $filePath = \app\service\UrlHelper::getPageStaticPath($page, $this->siteId);
+
+            // 确保目录存在
+            \app\service\UrlHelper::ensureDirectory($filePath);
+
             file_put_contents($filePath, $content);
 
             return Response::success([], '页面生成成功');

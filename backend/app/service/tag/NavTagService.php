@@ -82,7 +82,7 @@ class NavTagService
             $navs[] = [
                 'id' => 'page_' . $page['id'],
                 'title' => $page['title'],
-                'url' => '/page/' . $page['id'] . '.html',
+                'url' => \app\service\UrlHelper::getPageUrl($page),
                 'type' => 'page',
                 'sort' => $sort++,
                 'page_id' => $page['id']

@@ -158,7 +158,7 @@ class BreadcrumbTagService
         // 添加当前页面
         $breadcrumbs[] = [
             'title' => $page->title,
-            'url' => '/page/' . $page->id . '.html',
+            'url' => \app\service\UrlHelper::getPageUrl($page),
             'is_current' => true
         ];
 

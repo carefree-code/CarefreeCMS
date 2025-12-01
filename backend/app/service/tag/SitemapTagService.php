@@ -145,7 +145,7 @@ class SitemapTagService
         foreach ($pages as $page) {
             $sitemap[] = [
                 'type' => 'page',
-                'loc' => self::getPageUrl($page['id']),
+                'loc' => self::getPageUrl($page),  // 传递整个 page 数组
                 'title' => $page['title'],
                 'lastmod' => date('Y-m-d', is_numeric($page['update_time']) ? $page['update_time'] : strtotime($page['update_time'])),
                 'changefreq' => 'monthly',
@@ -210,12 +210,22 @@ class SitemapTagService
     /**
      * 获取页面URL
      *
-     * @param int $id 页面ID
+     * @param mixed $idOrPage 页面ID或页面数组
      * @return string
      */
-    private static function getPageUrl($id)
+    private static function getPageUrl($idOrPage)
     {
-        return request()->domain() . '/page/' . $id . '.html';
+        // 如果是ID，需要先查询完整数据
+        if (!is_array($idOrPage)) {
+            $idOrPage = \app\model\Page::find($idOrPage);
+            if (!$idOrPage) {
+                return request()->domain() . '/page-not-found.html';
+            }
+            $idOrPage = $idOrPage->toArray();
+        }
+
+        // 使用 UrlHelper 生成完整 URL
+        return \app\service\UrlHelper::getPageUrl($idOrPage, null, true);
     }
 
     /**
@@ -331,7 +341,7 @@ class SitemapTagService
             foreach ($pages as $page) {
                 $tree[] = [
                     'title' => $page['title'],
-                    'url' => self::getPageUrl($page['id']),
+                    'url' => self::getPageUrl($page),
                     'children' => []
                 ];
             }

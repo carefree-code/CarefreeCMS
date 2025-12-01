@@ -26,15 +26,15 @@ return [
             // 服务器地址
             'hostname'        => env('DB_HOST', '127.0.0.1'),
             // 数据库名
-            'database'        => env('DB_NAME', ''),
+            'database'        => env('DB_NAME', 'cms_database'),
             // 用户名
-            'username'        => env('DB_USER', ''),
+            'username'        => env('DB_USER', 'root'),
             // 密码
-            'password'        => env('DB_PASS', ''),
+            'password'        => env('DB_PASS', 'cD9fC8hI5lY2oT7dH7hI4tK5oC9sE7iR'),
             // 端口
             'hostport'        => env('DB_PORT', '3306'),
             // 连接dsn
-            'dsn'             => 'mysql:host=127.0.0.1;port=3306;dbname=;charset=utf8mb4',
+            'dsn'             => 'mysql:host=127.0.0.1;port=3306;dbname=cms_database;charset=utf8mb4',
             // 数据库连接参数
             'params'          => [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,

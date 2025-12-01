@@ -2,16 +2,17 @@
 // CORS跨域配置
 return [
     // 允许的来源白名单（从.env读取，多个用逗号分隔）
+    // 空数组 [] 表示允许所有来源（开发环境）
     'allowed_origins' => !empty(env('cors.allowed_origins'))
         ? array_map('trim', explode(',', env('cors.allowed_origins')))
-        : [
-            'http://localhost:5173',
-            'http://localhost:3000',
-            'http://localhost:3001',
-            'http://127.0.0.1:5173',
-            'http://127.0.0.1:3000',
-            'http://127.0.0.1:3001',
-        ],
+        : [],  // 允许所有来源（适合开发/测试）
+
+    // 生产环境示例（取消注释并配置）：
+    // 'allowed_origins' => [
+    //     'https://your-frontend-domain.com',
+    //     'http://localhost:5173',
+    //     'http://localhost:3000',
+    // ],
 
     // 允许的HTTP方法
     'allowed_methods' => 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
