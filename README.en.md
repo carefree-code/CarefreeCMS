@@ -9,6 +9,8 @@ CarefreeCMS is a modern, high-performance content management platform featuring 
 
 QQ Group: 113572201
 
+[Demo](https://cmsdemo.qysj.cn/)
+
 ## System Overview
 
 CarefreeCMS v2.0.0 is a powerful and technologically advanced content management platform designed for modern web applications. The system adopts a fully decoupled frontend-backend architecture, with the backend based on ThinkPHP 8 framework and the frontend built with Vue 3 + Vite, providing smooth user experience and excellent developer experience.
