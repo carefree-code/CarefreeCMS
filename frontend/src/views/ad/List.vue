@@ -120,7 +120,7 @@
           <el-table :data="positions" border style="width: 100%">
             <el-table-column prop="id" label="ID" width="80" />
             <el-table-column prop="name" label="广告位名称" min-width="150" />
-            <el-table-column prop="code" label="广告位代码" min-width="150" />
+            <el-table-column prop="slug" label="广告位代码" min-width="150" />
             <el-table-column label="尺寸" width="120">
               <template #default="{ row }">
                 {{ row.width || '-' }} × {{ row.height || '-' }}
@@ -314,8 +314,8 @@
           <el-input v-model="positionForm.name" placeholder="请输入广告位名称" />
         </el-form-item>
 
-        <el-form-item label="广告位代码" prop="code">
-          <el-input v-model="positionForm.code" placeholder="例如：home_top_banner" />
+        <el-form-item label="广告位代码" prop="slug">
+          <el-input v-model="positionForm.slug" placeholder="例如：home_top_banner" />
           <div style="margin-top: 5px; color: #909399; font-size: 12px;">
             只能包含小写字母、数字和下划线
           </div>
@@ -487,7 +487,7 @@ const form = reactive({
 const positionForm = reactive({
   site_id: null,
   name: '',
-  code: '',
+  slug: '',
   description: '',
   width: null,
   height: null,
@@ -504,7 +504,7 @@ const rules = {
 const positionRules = {
   site_id: [{ required: true, message: '请选择所属站点', trigger: 'change' }],
   name: [{ required: true, message: '请输入广告位名称', trigger: 'blur' }],
-  code: [
+  slug: [
     { required: true, message: '请输入广告位代码', trigger: 'blur' },
     { pattern: /^[a-z0-9_]+$/, message: '只能包含小写字母、数字和下划线', trigger: 'blur' }
   ]
@@ -833,7 +833,7 @@ const resetForm = () => {
 const resetPositionForm = () => {
   positionForm.site_id = null
   positionForm.name = ''
-  positionForm.code = ''
+  positionForm.slug = ''
   positionForm.description = ''
   positionForm.width = null
   positionForm.height = null

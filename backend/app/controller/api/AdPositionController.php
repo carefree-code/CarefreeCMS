@@ -27,7 +27,7 @@ class AdPositionController extends BaseController
 
         // 关键词搜索
         if (!empty($keyword)) {
-            $query->where('name|code', 'like', '%' . $keyword . '%');
+            $query->where('name|slug', 'like', '%' . $keyword . '%');
         }
 
         // 状态筛选
@@ -83,7 +83,7 @@ class AdPositionController extends BaseController
     {
         $data = $request->only([
             'name',
-            'code',
+            'slug',
             'description',
             'width',
             'height',
@@ -93,13 +93,13 @@ class AdPositionController extends BaseController
         // 数据验证
         $validate = Validate::rule([
             'name' => 'require|max:50',
-            'code' => 'require|max:50|regex:^[a-z0-9_]+$',
+            'slug' => 'require|max:50|regex:^[a-z0-9_]+$',
         ])->message([
             'name.require' => '广告位名称不能为空',
             'name.max' => '广告位名称最多50个字符',
-            'code.require' => '广告位代码不能为空',
-            'code.max' => '广告位代码最多50个字符',
-            'code.regex' => '广告位代码只能包含小写字母、数字和下划线',
+            'slug.require' => '广告位代码不能为空',
+            'slug.max' => '广告位代码最多50个字符',
+            'slug.regex' => '广告位代码只能包含小写字母、数字和下划线',
         ]);
 
         if (!$validate->check($data)) {
@@ -108,7 +108,7 @@ class AdPositionController extends BaseController
 
         // 检查代码是否重复
         $exists = Group::where('type', Group::TYPE_AD)
-            ->where('code', $data['code'])
+            ->where('slug', $data['slug'])
             ->find();
         if ($exists) {
             return $this->error('广告位代码已存在');
@@ -124,7 +124,7 @@ class AdPositionController extends BaseController
         $groupData = [
             'type' => Group::TYPE_AD,
             'name' => $data['name'],
-            'code' => $data['code'],
+            'slug' => $data['slug'],
             'description' => $data['description'] ?? null,
             'config' => json_encode($config),
             'status' => $data['status'] ?? Group::STATUS_ENABLED,
@@ -148,7 +148,7 @@ class AdPositionController extends BaseController
 
         $data = $request->only([
             'name',
-            'code',
+            'slug',
             'description',
             'width',
             'height',
@@ -158,13 +158,13 @@ class AdPositionController extends BaseController
         // 数据验证
         $validate = Validate::rule([
             'name' => 'require|max:50',
-            'code' => 'require|max:50|regex:^[a-z0-9_]+$',
+            'slug' => 'require|max:50|regex:^[a-z0-9_]+$',
         ])->message([
             'name.require' => '广告位名称不能为空',
             'name.max' => '广告位名称最多50个字符',
-            'code.require' => '广告位代码不能为空',
-            'code.max' => '广告位代码最多50个字符',
-            'code.regex' => '广告位代码只能包含小写字母、数字和下划线',
+            'slug.require' => '广告位代码不能为空',
+            'slug.max' => '广告位代码最多50个字符',
+            'slug.regex' => '广告位代码只能包含小写字母、数字和下划线',
         ]);
 
         if (!$validate->check($data)) {
@@ -172,9 +172,9 @@ class AdPositionController extends BaseController
         }
 
         // 检查代码是否重复（排除自己）
-        if (isset($data['code'])) {
+        if (isset($data['slug'])) {
             $exists = Group::where('type', Group::TYPE_AD)
-                ->where('code', $data['code'])
+                ->where('slug', $data['slug'])
                 ->where('id', '<>', $id)
                 ->find();
             if ($exists) {
@@ -194,8 +194,9 @@ class AdPositionController extends BaseController
 
         if ($hasConfigUpdate) {
             // 获取现有配置
-            $currentConfig = json_decode($position->config ?? '{}', true) ?: [];
-
+            //判断是否为json格式
+            // $currentConfig = json_decode($position->config ?? '{}', true) ?: [];
+            $currentConfig = $position->config;
             // 更新配置字段
             foreach ($configFields as $field) {
                 if (isset($data[$field])) {
